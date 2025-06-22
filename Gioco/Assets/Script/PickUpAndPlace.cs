@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PickUp : MonoBehaviour
+public class PickUpAndPlace : MonoBehaviour
 {
     [SerializeField] private Camera playerCamera;
-    [SerializeField] private float pickUpRange = 3f;
+    public float pickUpRange = 3f;
     [SerializeField] private Transform hand;
 
     private Rigidbody currentObjectRB;
