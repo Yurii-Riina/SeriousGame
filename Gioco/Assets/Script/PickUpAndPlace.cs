@@ -12,7 +12,7 @@ public class PickUpAndPlace : MonoBehaviour
     private Collider currentObjectCollider;
     private Quaternion originalRotation;
 
-    // StackPoint attuale dove verrà posizionato il prossimo ingrediente
+    // StackPoint attuale dove verrà posizionato il prossimo ingrediente/oggetto
     private Transform currentStackPoint;
 
     void Update()
@@ -47,8 +47,10 @@ public class PickUpAndPlace : MonoBehaviour
                     return;
                 }
             }
-
-            // Se clicchi altrove con oggetto in mano, lo droppi
+        }
+        else if (Input.GetMouseButtonDown(1))
+        {
+            // Se hai un oggetto in mano, lo lasci cadere
             if (currentObjectRB != null)
             {
                 DropObject();
@@ -76,6 +78,7 @@ public class PickUpAndPlace : MonoBehaviour
     void DropObject()
     {
         currentObjectRB.isKinematic = false;
+        currentObjectRB.useGravity = true;
         currentObjectCollider.enabled = true;
         currentObjectRB.transform.SetParent(null);
 
@@ -84,6 +87,7 @@ public class PickUpAndPlace : MonoBehaviour
         currentObjectRB = null;
         currentObjectCollider = null;
         currentStackPoint = null;
+
     }
 
     void PlaceObjectOnStack()
@@ -110,5 +114,12 @@ public class PickUpAndPlace : MonoBehaviour
 
         currentObjectRB = null;
         currentObjectCollider = null;
+    }
+
+    public void SetHeldObject(Rigidbody rb, Collider col)
+    {
+        currentObjectRB = rb;
+        currentObjectCollider = col;
+        originalRotation = rb.transform.rotation;
     }
 }

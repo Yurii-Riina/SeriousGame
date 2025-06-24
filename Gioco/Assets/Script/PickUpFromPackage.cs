@@ -7,7 +7,6 @@ public class PickUpFromPackage : MonoBehaviour
     [SerializeField] private Transform hand;
     [SerializeField] private PickUpAndPlace pickUpAndPlaceScript;
 
-    // Definisci una lista serializzabile di pacchi e prefab associati
     [System.Serializable]
     public class PackagePrefabPair
     {
@@ -53,18 +52,39 @@ public class PickUpFromPackage : MonoBehaviour
     {
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, pickUpAndPlaceScript.pickUpRange))
+        if(Physics.Raycast(ray, out RaycastHit hit, pickUpAndPlaceScript.pickUpRange))
         {
             GameObject hitObject = hit.collider.gameObject;
 
-            if (hitObject.CompareTag("Package"))
+            if(hitObject.CompareTag("Package"))
             {
                 string packageName = hitObject.name;
 
                 if (packagePrefabDict.TryGetValue(packageName, out GameObject prefabToSpawn))
                 {
+                    if (hand.transform.childCount != 0)
+                    {
+                        Destroy(hand.GetChild(0).gameObject);
+                    }
                     GameObject item = Instantiate(prefabToSpawn, hand.position, hand.rotation);
+
+                    Rigidbody rb = item.GetComponent<Rigidbody>();
+                    Collider col = item.GetComponent<Collider>();
+
+                    if (rb != null && col != null)
+                    {
+                        rb.isKinematic = true;
+                        col.enabled = false;
+
+                        // Aggiorna il PickUpAndPlace per segnalare che l’oggetto è in mano
+                        pickUpAndPlaceScript.SetHeldObject(rb, col);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Prefab senza Rigidbody o Collider: " + item.name);
+                    }
                     item.transform.SetParent(hand);
+                    Debug.Log("Preso oggetto dal pacchetto: " + prefabToSpawn+ " | Active: " + prefabToSpawn.activeSelf);
                 }
                 else
                 {
