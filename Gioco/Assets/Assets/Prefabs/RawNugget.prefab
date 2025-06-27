@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8057906142560878244}
   - component: {fileID: 2285699853259176436}
   - component: {fileID: 9006278922359916947}
+  - component: {fileID: -1309267991719900605}
   m_Layer: 0
   m_Name: RawNugget
   m_TagString: Pickable
@@ -136,3 +137,15 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.0015556838, y: 0.0017074873, z: 0.0014968506}
   m_Center: {x: -0.00028711636, y: 0.003820224, z: -0.00022397832}
+--- !u!114 &-1309267991719900605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5871814618389169734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd730ed9707a481408cc39522da094c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

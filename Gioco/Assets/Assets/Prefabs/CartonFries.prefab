@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3293468503422577059}
   - component: {fileID: 7486067901550796753}
   - component: {fileID: 9213745275613765483}
+  - component: {fileID: 8351908535226924609}
   m_Layer: 0
   m_Name: CartonFries
   m_TagString: Package
@@ -136,3 +137,15 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &8351908535226924609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6634527145305410713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd730ed9707a481408cc39522da094c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -7667,6 +7667,7 @@ GameObject:
   - component: {fileID: 8939031971499421737}
   - component: {fileID: 1146920650702874841}
   - component: {fileID: 4664203997921829012}
+  - component: {fileID: -4677097316957358231}
   m_Layer: 0
   m_Name: TopCookedBread
   m_TagString: Pickable
@@ -8090,6 +8091,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.020609342, y: 0.02010374, z: 0.007125969}
   m_Center: {x: 0.0000059371814, y: -0.00006548503, z: 0.0014139408}
+--- !u!114 &-4677097316957358231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2757127483303149344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd730ed9707a481408cc39522da094c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2769458173499050467
 GameObject:
   m_ObjectHideFlags: 0

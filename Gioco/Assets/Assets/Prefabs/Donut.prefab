@@ -12225,6 +12225,7 @@ GameObject:
   - component: {fileID: 2196764514557029129}
   - component: {fileID: 1674675915638993808}
   - component: {fileID: 2656217836571622717}
+  - component: {fileID: 8256503414423794318}
   m_Layer: 0
   m_Name: Donut
   m_TagString: Pickable
@@ -12349,6 +12350,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.001441043, y: 0.0014540814, z: 0.00050187047}
   m_Center: {x: 0.0000044110357, y: 0.000009357583, z: 0.000003068023}
+--- !u!114 &8256503414423794318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1193418347753089723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd730ed9707a481408cc39522da094c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1207253516786366890
 GameObject:
   m_ObjectHideFlags: 0

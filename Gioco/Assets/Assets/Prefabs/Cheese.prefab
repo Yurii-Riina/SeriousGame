@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1332865626367216141}
   - component: {fileID: 3679073115846637418}
   - component: {fileID: 6890352310984926378}
+  - component: {fileID: -7655213458492533264}
   m_Layer: 0
   m_Name: Cheese
   m_TagString: Pickable
@@ -137,6 +138,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &-7655213458492533264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2956991605609382883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd730ed9707a481408cc39522da094c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3010332403691850227
 GameObject:
   m_ObjectHideFlags: 0

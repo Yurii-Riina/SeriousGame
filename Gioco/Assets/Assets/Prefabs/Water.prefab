@@ -207,6 +207,7 @@ GameObject:
   - component: {fileID: 3460532804137861052}
   - component: {fileID: 2078288532593705380}
   - component: {fileID: 4378090842571867799}
+  - component: {fileID: 5812138645465292685}
   m_Layer: 0
   m_Name: Water
   m_TagString: Pickable
@@ -333,6 +334,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &5812138645465292685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8387502999775450946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd730ed9707a481408cc39522da094c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8725611113821028020
 GameObject:
   m_ObjectHideFlags: 0

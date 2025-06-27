@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1389759016141947259}
   - component: {fileID: 7103797973642559028}
   - component: {fileID: 5717439005769248434}
+  - component: {fileID: -2726848005773580143}
   m_Layer: 0
   m_Name: CocaCola
   m_TagString: Pickable
@@ -137,3 +138,15 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.020989593, y: 0.020848125, z: 0.040375832}
   m_Center: {x: -0.00022047, y: -0.003861789, z: 0.022275558}
+--- !u!114 &-2726848005773580143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8270017760321396335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd730ed9707a481408cc39522da094c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

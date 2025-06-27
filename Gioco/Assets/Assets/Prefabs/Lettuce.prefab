@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2135439433206602073}
   - component: {fileID: 982825595160410120}
   - component: {fileID: -616243684829844556}
+  - component: {fileID: -4446827334993869550}
   m_Layer: 0
   m_Name: Lettuce
   m_TagString: Pickable
@@ -136,3 +137,15 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1305274426797420834}
   m_Mesh: {fileID: 6416302070336371891, guid: 8e61a99b4a0918347b01f222cdd8feb6, type: 3}
+--- !u!114 &-4446827334993869550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1305274426797420834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd730ed9707a481408cc39522da094c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -185,6 +185,7 @@ GameObject:
   - component: {fileID: 4712990827457139048}
   - component: {fileID: 1568519265176603757}
   - component: {fileID: 7380830055612395232}
+  - component: {fileID: 31023135077639998}
   m_Layer: 0
   m_Name: CookedFries
   m_TagString: Pickable
@@ -261,6 +262,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.19323158, y: 0.036937237, z: 0.19464874}
   m_Center: {x: -0.008904457, y: 0.01243639, z: 0.103878975}
+--- !u!114 &31023135077639998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5172039269788134782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd730ed9707a481408cc39522da094c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5816181599639512242
 GameObject:
   m_ObjectHideFlags: 0

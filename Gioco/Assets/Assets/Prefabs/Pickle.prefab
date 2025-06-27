@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4938068366956518531}
   - component: {fileID: 2172070347881829254}
   - component: {fileID: 5800814706477109738}
+  - component: {fileID: -6307899640801360858}
   m_Layer: 0
   m_Name: Pickle
   m_TagString: Pickable
@@ -137,6 +138,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &-6307899640801360858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5170950843263013807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd730ed9707a481408cc39522da094c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7494740233107242989
 GameObject:
   m_ObjectHideFlags: 0
