@@ -1,5 +1,4 @@
 using UnityEngine;
-
 public class PickUpAndPlace : MonoBehaviour
 {
     [SerializeField] private Camera playerCamera;
@@ -86,7 +85,7 @@ public class PickUpAndPlace : MonoBehaviour
         ClearState();
     }
 
-    private void PlaceObjectOnStack()
+    public void PlaceObjectOnStack()
     {
         currentObjectRB.isKinematic = true;
         currentObjectCollider.enabled = true;
@@ -104,6 +103,30 @@ public class PickUpAndPlace : MonoBehaviour
 
         ClearState();
     }
+
+    public void PlaceObjectAt(Transform stackPoint) //questo metodo è usato da altri script per posizionare l'oggetto in un punto dato in input
+    {
+        if (currentObjectRB == null) return;
+
+        currentObjectRB.isKinematic = true;
+        currentObjectRB.transform.SetParent(null);
+        
+        // Aggiunta offset verticale
+        currentObjectRB.transform.position = stackPoint.position;
+        currentObjectRB.transform.rotation = stackPoint.rotation;
+
+        var originalScaleComponent = currentObjectRB.GetComponent<OriginalScale>();
+        currentObjectRB.transform.localScale = originalScaleComponent ? originalScaleComponent.originalScale : originalScale;
+
+        currentObjectCollider.enabled = true;
+
+        Debug.Log("Oggetto posizionato su stack: " + stackPoint.name);
+
+        currentStackPoint = currentObjectRB.transform.Find("StackPoint");
+
+        ClearState();
+    }
+
 
     //serve per permettere ad altri script di comunicare che hanno fatto raccogliere un oggetto al player
     public void SetHeldObject(Rigidbody rb, Collider col)

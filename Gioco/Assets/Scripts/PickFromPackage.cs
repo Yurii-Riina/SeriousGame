@@ -19,7 +19,7 @@ public class PickFromPackage : MonoBehaviour
 
     private Dictionary<string, PackagePrefabPair> packagePrefabDict;
 
-    private float lastEPressTime = 0f;
+    private float lastPressTime = 0f;
     private float doubleClickThreshold = 0.3f;
 
     private void Awake()
@@ -45,11 +45,11 @@ public class PickFromPackage : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            float timeSinceLastPress = Time.time - lastEPressTime;
+            float timeSinceLastPress = Time.time - lastPressTime;
             bool isDoubleClick = timeSinceLastPress <= doubleClickThreshold;
 
             TryPickFromPackage(isDoubleClick);
-            lastEPressTime = Time.time;
+            lastPressTime = Time.time;
         }
     }
 
@@ -99,6 +99,8 @@ public class PickFromPackage : MonoBehaviour
 
                     GameObject item = Instantiate(prefabToSpawn, hand.position, hand.rotation);
 
+                    item.name = prefabToSpawn.name; //così evito che l'oggetto che mi spawna in mano abbia il suffisso "(Clone)" perchè avrebbe dato problemi con altri script
+
                     // Reset scala originale se presente componente OriginalScale
                     OriginalScale os = item.GetComponent<OriginalScale>();
                     if (os != null)
@@ -117,7 +119,7 @@ public class PickFromPackage : MonoBehaviour
                         pickUpAndPlaceScript.SetHeldObject(rb, col);
                         item.transform.SetParent(hand);
 
-                        Debug.Log($"Preso oggetto da {packageName} {(isDoubleClick ? "[Doppio clic]" : "[Singolo clic]")}: {prefabToSpawn.name}");
+                        Debug.Log($"Preso oggetto da {packageName} {(isDoubleClick ? "[Doppio clic]" : "[Singolo clic]")}: {item.name}");
                     }
                     else
                     {

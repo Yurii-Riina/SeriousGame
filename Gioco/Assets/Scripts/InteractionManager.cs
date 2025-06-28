@@ -4,6 +4,7 @@ public class InteractionManager : MonoBehaviour
 {
     [SerializeField] private PickUpAndPlace pickUpAndPlaceScript;
     [SerializeField] private PickFromPackage pickFromPackageScript;
+    [SerializeField] private PlaceOnTray placeOnTrayScript;
 
     void Awake()
     {
@@ -24,11 +25,21 @@ public class InteractionManager : MonoBehaviour
                 Debug.LogError("PickUpFromPackage script is not assigned or found on this GameObject.");
             }
         }
+
+        if (placeOnTrayScript == null)
+        {
+            placeOnTrayScript = GetComponent<PlaceOnTray>();
+            if (placeOnTrayScript == null)
+            {
+                Debug.LogError("PlaceOnTray script is not assigned or found on this GameObject.");
+            }
+        }
     }
 
     void Update()
     {
         pickUpAndPlaceScript.PickPlaceDrop();
         pickFromPackageScript.HandleEButtonClick();
+        placeOnTrayScript.HandleFButtonClick();
     }
 }
