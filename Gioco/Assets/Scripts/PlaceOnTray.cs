@@ -60,7 +60,6 @@ public class PlaceOnTray : MonoBehaviour
         {
             GameObject hitObject = hit.collider.gameObject;
 
-            // Assicurati che il Tray colpito abbia dei stack point figli
             if (hitObject.name == "Tray" && hand.childCount > 0)
             {
                 Transform trayTransform = hitObject.transform;
@@ -68,7 +67,6 @@ public class PlaceOnTray : MonoBehaviour
                 GameObject heldObject = hand.GetChild(0).gameObject;
                 string heldName = heldObject.name;
 
-                // Passaggio opzionale ma consigliato
                 Rigidbody rb = heldObject.GetComponent<Rigidbody>();
                 Collider col = heldObject.GetComponent<Collider>();
                 if (rb != null && col != null)
@@ -90,6 +88,7 @@ public class PlaceOnTray : MonoBehaviour
                     {
                         Debug.Log($"[PlaceOnTray] Posizionamento '{heldName}' su '{matchingStackPoint}' del tray: {trayTransform.name}");
                         pickUpAndPlaceScript.PlaceObjectAt(stackPointTransform);
+                        heldObject.transform.SetParent(trayTransform); 
                     }
                     else
                     {

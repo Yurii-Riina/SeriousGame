@@ -1,4 +1,5 @@
 using UnityEngine;
+
 public class PickUpAndPlace : MonoBehaviour
 {
     [SerializeField] private Camera playerCamera;
@@ -104,16 +105,21 @@ public class PickUpAndPlace : MonoBehaviour
         ClearState();
     }
 
-    public void PlaceObjectAt(Transform stackPoint) //questo metodo è usato da altri script per posizionare l'oggetto in un punto dato in input
+    public void PlaceObjectAt(Transform stackPoint)
     {
         if (currentObjectRB == null) return;
 
         currentObjectRB.isKinematic = true;
         currentObjectRB.transform.SetParent(null);
-        
-        // Aggiunta offset verticale
         currentObjectRB.transform.position = stackPoint.position;
         currentObjectRB.transform.rotation = stackPoint.rotation;
+
+        // Applica rotazione personalizzata se esiste
+        var rotComponent = currentObjectRB.GetComponent<OriginalRotation>();
+        if (rotComponent != null)
+        {
+            currentObjectRB.transform.localRotation *= Quaternion.Euler(rotComponent.originalEulerRotation);
+        }
 
         var originalScaleComponent = currentObjectRB.GetComponent<OriginalScale>();
         currentObjectRB.transform.localScale = originalScaleComponent ? originalScaleComponent.originalScale : originalScale;
@@ -127,8 +133,6 @@ public class PickUpAndPlace : MonoBehaviour
         ClearState();
     }
 
-
-    //serve per permettere ad altri script di comunicare che hanno fatto raccogliere un oggetto al player
     public void SetHeldObject(Rigidbody rb, Collider col)
     {
         currentObjectRB = rb;
@@ -148,7 +152,18 @@ public class PickUpAndPlace : MonoBehaviour
 
         currentObjectRB.transform.SetParent(hand);
         currentObjectRB.transform.localPosition = Vector3.zero;
-        currentObjectRB.transform.localRotation = Quaternion.identity;
+
+        // Applica la rotazione definita nello script OriginalRotation
+        var rotComponent = currentObjectRB.GetComponent<OriginalRotation>();
+        if (rotComponent != null)
+        {
+            currentObjectRB.transform.localRotation = Quaternion.Euler(rotComponent.originalEulerRotation);
+        }
+        else
+        {
+            currentObjectRB.transform.localRotation = Quaternion.identity;
+        }
+
         currentObjectRB.transform.localScale = originalScale;
     }
 
