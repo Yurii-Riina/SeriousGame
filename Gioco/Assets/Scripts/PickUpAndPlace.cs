@@ -92,18 +92,32 @@ public class PickUpAndPlace : MonoBehaviour
         currentObjectCollider.enabled = true;
         currentObjectRB.transform.SetParent(null);
         currentObjectRB.transform.position = currentStackPoint.position;
+
+        // Inizia con la rotazione base dello stack
         currentObjectRB.transform.rotation = currentStackPoint.rotation;
+
+        // Aggiunge la rotazione personalizzata
+        var rotComponent = currentObjectRB.GetComponent<OriginalRotation>();
+        if (rotComponent != null && currentObjectRB.name.Contains("Tray")) //evitiamo la rotazione per il tray
+        {
+            currentObjectRB.transform.localRotation = Quaternion.Euler(rotComponent.originalEulerRotation);
+        }
+        else if (rotComponent != null) 
+        {
+            currentObjectRB.transform.rotation *= rotComponent.originalRotation;
+        }
 
         var originalScaleComponent = currentObjectRB.GetComponent<OriginalScale>();
         currentObjectRB.transform.localScale = originalScaleComponent ? originalScaleComponent.originalScale : originalScale;
 
         Debug.Log("Posizionato su stack: " + currentStackPoint.name);
 
-        // Stack sul nuovo oggetto (se esiste)
+        // StackPoint aggiornato
         currentStackPoint = currentObjectRB.transform.Find("StackPoint");
 
         ClearState();
     }
+
 
     public void PlaceObjectAt(Transform stackPoint)
     {
@@ -171,6 +185,10 @@ public class PickUpAndPlace : MonoBehaviour
     {
         currentObjectRB = null;
         currentObjectCollider = null;
-        currentStackPoint = null;
+        if (currentStackPoint == null || !currentStackPoint.name.Contains("CartonHamburger")) // evitiamo che lo stack point venga eliminato quando costruiamo il panino sennò gli ingredienti si posizionerebbero uno dentro l'altro 
+        {
+            currentStackPoint = null;
+        }
+
     }
 }
