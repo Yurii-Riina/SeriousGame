@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: -844393591221461634}
   - component: {fileID: 4939285820876038408}
   - component: {fileID: 3114015245086094045}
+  - component: {fileID: -8618786184726108029}
   m_Layer: 0
   m_Name: RawMeat
   m_TagString: Pickable
@@ -210,3 +211,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canBePlacedOnGrill: 1
+--- !u!114 &-8618786184726108029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7533526118920919480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6dd7b3d71fcccd4ebf09a11ebd61ce7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
