@@ -1,4 +1,5 @@
 using UnityEngine;
+//using static System.IO.Enumeration.FileSystemEnumerable<TResult>;
 
 public class PickUpAndPlace : MonoBehaviour
 {
@@ -151,12 +152,15 @@ public class PickUpAndPlace : MonoBehaviour
     {
         currentObjectRB = rb;
         currentObjectCollider = col;
-        originalRotation = rb.transform.rotation;
 
-        var originalScaleComponent = rb.GetComponent<OriginalScale>();
-        originalScale = originalScaleComponent ? originalScaleComponent.originalScale : rb.transform.localScale;
+        if (currentObjectRB != null)
+        {
+            currentObjectRB.isKinematic = true;
+        }
 
-        AttachToHand();
+        rb.transform.SetParent(hand);
+        rb.transform.localPosition = Vector3.zero;
+        rb.transform.localRotation = Quaternion.identity;
     }
 
     private void AttachToHand()
@@ -190,5 +194,16 @@ public class PickUpAndPlace : MonoBehaviour
             currentStackPoint = null;
         }
 
+    }
+
+    public GameObject GetHeldObject()
+    {
+        return currentObjectRB != null ? currentObjectRB.gameObject : null;
+    }
+
+    public void ClearHeldObject()
+    {
+        currentObjectRB = null;
+        currentObjectCollider = null;
     }
 }
