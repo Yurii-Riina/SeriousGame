@@ -1,0 +1,18 @@
+FRITTI:
+Patatine
+Chicken nuggets
+
+DOLCI:
+Donut
+
+DRINK:
+Acqua 
+Coca Cola
+Fanta
+
+PANINI:
+1) L'Americano: hamburger, bacon, formaggio.
+2) Lo Special Burger: hamburger, bacon, formaggio, cipolla, insalata, cetriolini, pomodoro. (tutto insomma)
+3) Il Vegetale: cipolla, insalata, cetriolini, pomodoro. (senza patty)
+4) Il Baby Burger: hamburger, bacon.
+5) L'innominato: hamburger, cipolla, cetriolini, formaggio (l'ho chiamato così perché non mi veniva in mente nessun nome)
