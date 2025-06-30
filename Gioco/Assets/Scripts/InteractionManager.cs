@@ -5,6 +5,7 @@ public class InteractionManager : MonoBehaviour
     [SerializeField] private PickUpAndPlace pickUpAndPlaceScript;
     [SerializeField] private PickFromPackage pickFromPackageScript;
     [SerializeField] private PlaceOnTray placeOnTrayScript;
+    [SerializeField] private GrillPlacingRaycast grillPlacingRaycast;
 
     void Awake()
     {
@@ -34,6 +35,15 @@ public class InteractionManager : MonoBehaviour
                 Debug.LogError("PlaceOnTray script is not assigned or found on this GameObject.");
             }
         }
+
+        if (grillPlacingRaycast == null)
+        {
+            grillPlacingRaycast = GetComponent<GrillPlacingRaycast>();
+            if (grillPlacingRaycast == null)
+            {
+                Debug.LogError("GrillPlacingRaycast script is not assigned or found on this GameObject.");
+            }
+        }
     }
 
     void Update()
@@ -41,5 +51,7 @@ public class InteractionManager : MonoBehaviour
         pickUpAndPlaceScript.PickPlaceDrop();
         pickFromPackageScript.HandleEButtonClick();
         placeOnTrayScript.HandleFButtonClick();
+        grillPlacingRaycast.HandleCButtonClick();
+
     }
 }

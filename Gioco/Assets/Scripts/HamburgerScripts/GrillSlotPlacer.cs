@@ -13,7 +13,7 @@ public class GrillSlotPlacer : MonoBehaviour
     }
 
     /// <summary>
-    /// Prova a piazzare l'oggetto nello slot libero più vicino.
+    /// Prova a piazzare l'oggetto nello slot libero piÃ¹ vicino.
     /// </summary>
     public bool TryPlaceObject(GameObject obj)
     {

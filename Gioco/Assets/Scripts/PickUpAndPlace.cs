@@ -112,10 +112,16 @@ public class PickUpAndPlace : MonoBehaviour
         currentObjectRB.transform.localScale = originalScaleComponent ? originalScaleComponent.originalScale : originalScale;
 
         Debug.Log("Posizionato su stack: " + currentStackPoint.name);
+        
+        if (!currentObjectRB.name.Contains("Tray"))
+        {
+            Transform parent = currentStackPoint.parent;
+            currentObjectRB.transform.SetParent(parent);
+        }
 
         // StackPoint aggiornato
         currentStackPoint = currentObjectRB.transform.Find("StackPoint");
-
+    
         ClearState();
     }
 

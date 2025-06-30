@@ -6,9 +6,9 @@ public class GrillPlacingRaycast : MonoBehaviour
     [SerializeField] private float range = 3f;
     [SerializeField] private PickUpAndPlace pickUpAndPlace;
 
-    void Update()
+    public void HandleCButtonClick()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.C))
         {
             GameObject held = pickUpAndPlace.GetHeldObject();
             if (held == null)
@@ -21,6 +21,13 @@ public class GrillPlacingRaycast : MonoBehaviour
                 // Cerchiamo un oggetto che in gerarchia abbia GrillSlotPlacer
                 Transform current = hit.collider.transform;
                 GrillSlotPlacer placer = null;
+
+                CanBePlacedOnGrill canBePlaced = held.GetComponent<CanBePlacedOnGrill>();
+                if(canBePlaced == null || !canBePlaced.canBePlacedOnGrill)
+                {
+                    Debug.LogWarning("L'oggetto non può essere piazzato sul grill.");
+                    return;
+                }
 
                 while (current != null)
                 {

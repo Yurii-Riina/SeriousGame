@@ -7,7 +7,7 @@ public class GrillPlacingTest : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.C))
         {
             GameObject held = pickUpAndPlace.GetHeldObject();
             if (held != null)

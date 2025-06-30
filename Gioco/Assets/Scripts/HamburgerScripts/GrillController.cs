@@ -14,7 +14,7 @@ public class GrillController : MonoBehaviour
     [SerializeField] private AudioClip finishedSound;
 
     [Header("Parametri")]
-    [SerializeField] private float rotationSpeed = 2f;      // Velocit‡ apertura/chiusura
+    [SerializeField] private float rotationSpeed = 2f;      // Velocit√† apertura/chiusura
     [SerializeField] private float openAngle = 90f;         // Angolo di apertura
     [SerializeField] private float cookingTime = 10f;       // Durata cottura in secondi
 
@@ -42,7 +42,7 @@ public class GrillController : MonoBehaviour
             StartCoroutine(RotateGrillDoor(0f)); // chiudi
             isOpen = false;
 
-            // Se ci sono hamburger crudi e non sta gi‡ cucinando, parte la cottura
+            // Se ci sono hamburger crudi e non sta gi√† cucinando, parte la cottura
             if (!isCooking && HasRawHamburgers())
             {
                 cookingCoroutine = StartCoroutine(CookHamburgers());

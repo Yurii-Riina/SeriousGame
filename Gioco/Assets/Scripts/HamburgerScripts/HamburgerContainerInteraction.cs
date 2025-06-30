@@ -11,7 +11,7 @@ public class HamburgerContainerInteraction : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F))
         {
-            Debug.Log("Premuto E, inizio raycast per prelevare hamburger.");
+            Debug.Log("Premuto F, inizio raycast per prelevare hamburger.");
 
             Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
             if (Physics.Raycast(ray, out RaycastHit hit, range))
