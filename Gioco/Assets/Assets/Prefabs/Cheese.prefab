@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 3679073115846637418}
   - component: {fileID: 6890352310984926378}
   - component: {fileID: -7655213458492533264}
+  - component: {fileID: -8146754417177198027}
+  - component: {fileID: -2556608912798932628}
   m_Layer: 0
   m_Name: Cheese
   m_TagString: Pickable
@@ -150,6 +152,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd730ed9707a481408cc39522da094c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  originalScale: {x: 0, y: 0, z: 0}
+--- !u!114 &-8146754417177198027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2956991605609382883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbc3cdbe69be4764db026254c1cb85e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  originalEulerRotation: {x: 0, y: 0, z: 0}
+--- !u!114 &-2556608912798932628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2956991605609382883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dda257f95cb7a5a4fb36cf25c50f11ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  meltedPrefab: {fileID: 1885030305995706306, guid: fa5fd69d28a12d1448ac3bfc0e2a7db6, type: 3}
 --- !u!1 &3010332403691850227
 GameObject:
   m_ObjectHideFlags: 0

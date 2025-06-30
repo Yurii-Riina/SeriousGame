@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5170950843263013807
+--- !u!1 &1476297782464270022
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,12 +8,43 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1892591343354844379}
-  - component: {fileID: 8499490735822654320}
-  - component: {fileID: 4938068366956518531}
-  - component: {fileID: 2172070347881829254}
-  - component: {fileID: 5800814706477109738}
-  - component: {fileID: -6307899640801360858}
+  - component: {fileID: 4970359712177273863}
+  m_Layer: 0
+  m_Name: StackPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4970359712177273863
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1476297782464270022}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.0182, z: 0.02323}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8215404515837279787}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2848007991446221155
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8215404515837279787}
+  - component: {fileID: 6543572844194982342}
+  - component: {fileID: 8724120439578074110}
+  - component: {fileID: 7104875801321614916}
+  - component: {fileID: 7146652596110699345}
+  - component: {fileID: 531014968656652594}
   m_Layer: 0
   m_Name: Pickle
   m_TagString: Pickable
@@ -21,37 +52,37 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1892591343354844379
+--- !u!4 &8215404515837279787
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5170950843263013807}
+  m_GameObject: {fileID: 2848007991446221155}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -19.9784, y: 2.4182, z: 11.1708}
+  m_LocalPosition: {x: -17.338493, y: 1.3960241, z: 12.10055}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3128782790786096793}
+  - {fileID: 4970359712177273863}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
---- !u!33 &8499490735822654320
+--- !u!33 &6543572844194982342
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5170950843263013807}
+  m_GameObject: {fileID: 2848007991446221155}
   m_Mesh: {fileID: 5048499416062645125, guid: 39a82039fd5cab242ae65d3aa41b7919, type: 3}
---- !u!23 &4938068366956518531
+--- !u!23 &8724120439578074110
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5170950843263013807}
+  m_GameObject: {fileID: 2848007991446221155}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -90,13 +121,13 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &2172070347881829254
+--- !u!65 &7104875801321614916
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5170950843263013807}
+  m_GameObject: {fileID: 2848007991446221155}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -109,15 +140,15 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.018018514, y: 0.01814512, z: 0.00068342703}
-  m_Center: {x: -0.00015459536, y: 0.018685754, z: 0.021785581}
---- !u!54 &5800814706477109738
+  m_Size: {x: 0.01807928, y: 0.018331759, z: 0.00048694003}
+  m_Center: {x: 0.00000500679, y: 0.018329578, z: 0.021707684}
+--- !u!54 &7146652596110699345
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5170950843263013807}
+  m_GameObject: {fileID: 2848007991446221155}
   serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
@@ -138,46 +169,16 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &-6307899640801360858
+--- !u!114 &531014968656652594
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5170950843263013807}
+  m_GameObject: {fileID: 2848007991446221155}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cd730ed9707a481408cc39522da094c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &7494740233107242989
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3128782790786096793}
-  m_Layer: 0
-  m_Name: StackPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3128782790786096793
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7494740233107242989}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.0182, z: 0.02323}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1892591343354844379}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  originalScale: {x: 0, y: 0, z: 0}

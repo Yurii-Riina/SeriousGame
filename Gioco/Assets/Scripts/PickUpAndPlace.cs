@@ -103,7 +103,7 @@ public class PickUpAndPlace : MonoBehaviour
         {
             currentObjectRB.transform.localRotation = Quaternion.Euler(rotComponent.originalEulerRotation);
         }
-        else if (rotComponent != null) 
+        else if (rotComponent != null)
         {
             currentObjectRB.transform.rotation *= rotComponent.originalRotation;
         }
@@ -112,7 +112,7 @@ public class PickUpAndPlace : MonoBehaviour
         currentObjectRB.transform.localScale = originalScaleComponent ? originalScaleComponent.originalScale : originalScale;
 
         Debug.Log("Posizionato su stack: " + currentStackPoint.name);
-        
+
         if (!currentObjectRB.name.Contains("Tray"))
         {
             Transform parent = currentStackPoint.parent;
@@ -121,7 +121,68 @@ public class PickUpAndPlace : MonoBehaviour
 
         // StackPoint aggiornato
         currentStackPoint = currentObjectRB.transform.Find("StackPoint");
-    
+
+        // Debug: Inizio blocco formaggio
+        Debug.Log("INIZIO VERIFICA FUSIONE FORMAGGIO");
+
+        // Verifica se l'oggetto posizionato è un formaggio crudo
+        MeltableCheese meltable = currentObjectRB.GetComponent<MeltableCheese>();
+        if (meltable != null)
+        {
+            Debug.Log("Oggetto posizionato è un formaggio crudo.");
+
+            Vector3 checkPosition = currentObjectRB.transform.position + Vector3.down * 0.01f;
+            float radius = 0.1f;
+
+            Collider[] hits = Physics.OverlapSphere(checkPosition, radius);
+
+            if (hits.Length == 0)
+            {
+                Debug.Log("Nessun oggetto trovato sotto il formaggio.");
+            }
+            else
+            {
+                foreach (Collider col in hits)
+                {
+                    Debug.Log("Trovato collider sotto il formaggio: " + col.name);
+
+                    if (col.GetComponent<CookedMarker>() != null)
+                    {
+                        Debug.Log("TROVATO HAMBURGER COTTO sotto. Procedo con sostituzione.");
+
+                        // Salviamo posizione e rotazione
+                        Vector3 pos = currentObjectRB.transform.position;
+                        Quaternion rot = currentObjectRB.transform.rotation;
+
+                        // Distruggiamo il formaggio crudo
+                        Destroy(currentObjectRB.gameObject);
+
+                        // Istanziamo il formaggio fuso
+                        GameObject melted = Instantiate(meltable.meltedPrefab, pos, rot);
+
+                        // Se vuoi piazzarlo nello StackPoint
+                        melted.transform.position = currentStackPoint.position;
+
+                        // Imposta la scala originale se serve
+                        OriginalScale os = melted.GetComponent<OriginalScale>();
+                        if (os != null)
+                            melted.transform.localScale = os.originalScale;
+
+                        // Mettiamo nello stesso parent dell'hamburger
+                        melted.transform.SetParent(col.transform.parent);
+
+                        Debug.Log("Formaggio CRUDO distrutto e sostituito con prefab fuso: " + meltable.meltedPrefab.name);
+
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            Debug.Log("Oggetto NON è formaggio crudo, nessuna sostituzione.");
+        }
+
         ClearState();
     }
 
@@ -151,6 +212,89 @@ public class PickUpAndPlace : MonoBehaviour
 
         currentStackPoint = currentObjectRB.transform.Find("StackPoint");
 
+        // Debug: Inizio blocco formaggio
+        Debug.Log("INIZIO VERIFICA FUSIONE FORMAGGIO");
+
+        // Verifica se l'oggetto posizionato è un formaggio crudo
+        MeltableCheese meltable = currentObjectRB.GetComponent<MeltableCheese>();
+        if (meltable != null)
+        {
+            Debug.Log("Oggetto posizionato è un formaggio crudo.");
+
+            if (currentStackPoint != null)
+            {
+                Debug.Log("StackPoint presente: " + currentStackPoint.name);
+
+                // Cerchiamo se sotto c'è un hamburger cotto
+                Transform parent = currentStackPoint.parent;
+                if (parent != null)
+                {
+                    Debug.Log("Parent dello StackPoint: " + parent.name);
+
+                    foreach (Transform child in parent)
+                    {
+                        Debug.Log("Analizzo child: " + child.name);
+
+                        if (child.GetComponent<CookedMarker>() != null)
+                        {
+                            Debug.Log("Child ha CookedMarker: " + child.name);
+
+                            if (child.name.Contains("Hamburger"))
+                            {
+                                Debug.Log("TROVATO HAMBURGER COTTO nello stack. Procedo con sostituzione formaggio.");
+
+                                // Salviamo posizione e rotazione
+                                Vector3 pos = currentObjectRB.transform.position;
+                                Quaternion rot = currentObjectRB.transform.rotation;
+
+                                // Distruggiamo il formaggio crudo
+                                Destroy(currentObjectRB.gameObject);
+
+                                // Istanziamo il formaggio fuso
+                                GameObject melted = Instantiate(meltable.meltedPrefab, pos, rot);
+
+                                // ⬇️ Se vuoi piazzarlo nello StackPoint
+                                melted.transform.position = currentStackPoint.position;
+
+                                // Imposta la scala originale se serve
+                                OriginalScale os = melted.GetComponent<OriginalScale>();
+                                if (os != null)
+                                    melted.transform.localScale = os.originalScale;
+
+                                // Mettiamo nello stesso parent
+                                melted.transform.SetParent(parent);
+
+                                Debug.Log("Formaggio CRUDO distrutto e sostituito con prefab fuso: " + meltable.meltedPrefab.name);
+
+                                // Fine
+                                break;
+                            }
+                            else
+                            {
+                                Debug.Log("Child con CookedMarker MA nome non contiene 'Hamburger': " + child.name);
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log("Child NON ha CookedMarker: " + child.name);
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.Log("Parent dello StackPoint è NULL.");
+                }
+            }
+            else
+            {
+                Debug.Log("currentStackPoint è NULL.");
+            }
+        }
+        else
+        {
+            Debug.Log("Oggetto NON è formaggio crudo, nessuna sostituzione.");
+        }
+
         ClearState();
     }
 
@@ -172,7 +316,12 @@ public class PickUpAndPlace : MonoBehaviour
     private void AttachToHand()
     {
         currentObjectRB.isKinematic = true;
-        currentObjectCollider.enabled = false;
+
+        // Solo se NON è il vassoio, disabilita il collider
+        if (!currentObjectRB.name.Contains("Tray"))
+        {
+            currentObjectCollider.enabled = false;
+        }
 
         currentObjectRB.transform.SetParent(hand);
         currentObjectRB.transform.localPosition = Vector3.zero;
