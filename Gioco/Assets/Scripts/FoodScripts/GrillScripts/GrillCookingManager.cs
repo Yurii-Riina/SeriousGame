@@ -17,13 +17,13 @@ public class GrillCookingManager : MonoBehaviour
     [SerializeField] private AudioClip finishedSound;
 
     [Header("Parametri")]
-    [SerializeField] private float cookingTime = 5f;
+    public float cookingTime = 5f; //messo publico per il tutorial
 
     [Header("Gestione contenitore")]
     [SerializeField] private HamburgerContainerFixedManager containerManager;
 
     private bool[] isSlotOccupied;
-    private bool[] isCooking;
+    [HideInInspector] public bool[] isCooking; //pubblico perchè ci serve per il tutorial
 
     private void Awake()
     {
@@ -110,6 +110,8 @@ public class GrillCookingManager : MonoBehaviour
                 slot.rotation,
                 slot
             );
+
+            cookedBurger.name = "CookedMeat";
 
             Debug.Log($"Slot {index}: Cottura completata!");
 

@@ -7,6 +7,7 @@ public class PlaceOnTray : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     [SerializeField] private Transform hand;
     [SerializeField] private PickUpAndPlace pickUpAndPlaceScript;
+    public Transform currentTray { get; private set; }
 
     [System.Serializable]
     public class StackOnTray
@@ -62,7 +63,7 @@ public class PlaceOnTray : MonoBehaviour
 
             if (hitObject.name == "Tray" && hand.childCount > 0)
             {
-                Transform trayTransform = hitObject.transform;
+                currentTray = hitObject.transform;
 
                 GameObject heldObject = hand.GetChild(0).gameObject;
                 string heldName = heldObject.name;
@@ -82,17 +83,17 @@ public class PlaceOnTray : MonoBehaviour
                 if (!string.IsNullOrEmpty(matchingStackPoint))
                 {
                     // Cerca lo stack point come figlio del Tray effettivamente cliccato
-                    Transform stackPointTransform = trayTransform.Find(matchingStackPoint);
+                    Transform stackPointTransform = currentTray.Find(matchingStackPoint);
 
                     if (stackPointTransform != null)
                     {
-                        Debug.Log($"[PlaceOnTray] Posizionamento '{heldName}' su '{matchingStackPoint}' del tray: {trayTransform.name}");
+                        Debug.Log($"[PlaceOnTray] Posizionamento '{heldName}' su '{matchingStackPoint}' del tray: {currentTray.name}");
                         pickUpAndPlaceScript.PlaceObjectAt(stackPointTransform);
-                        heldObject.transform.SetParent(trayTransform); 
+                        heldObject.transform.SetParent(currentTray); 
                     }
                     else
                     {
-                        Debug.LogWarning($"[PlaceOnTray] Stack point '{matchingStackPoint}' non trovato sotto il Tray {trayTransform.name}.");
+                        Debug.LogWarning($"[PlaceOnTray] Stack point '{matchingStackPoint}' non trovato sotto il Tray {currentTray.name}.");
                     }
                 }
                 else
