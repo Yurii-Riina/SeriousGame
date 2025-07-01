@@ -12140,6 +12140,7 @@ GameObject:
   - component: {fileID: 3823456506651212693}
   - component: {fileID: 7386626661404922651}
   - component: {fileID: 4697926679862112236}
+  - component: {fileID: 5803274426365988111}
   m_Layer: 0
   m_Name: TopUncookedBread
   m_TagString: Pickable
@@ -12575,6 +12576,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd730ed9707a481408cc39522da094c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  originalScale: {x: 0, y: 0, z: 0}
+--- !u!114 &5803274426365988111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4419567590513917134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b92bfb4aaf75c634182998ba3c03ab7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  kind: 0
 --- !u!1 &4432782627662871129
 GameObject:
   m_ObjectHideFlags: 0
