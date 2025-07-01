@@ -6,44 +6,24 @@ public class InteractionManager : MonoBehaviour
     [SerializeField] private PickFromPackage pickFromPackageScript;
     [SerializeField] private PlaceOnTray placeOnTrayScript;
     [SerializeField] private GrillPlacingRaycast grillPlacingRaycast;
+    [SerializeField] private FoodContainerInteraction foodContainerInteraction;
 
     void Awake()
     {
         if (pickUpAndPlaceScript == null)
-        {
             pickUpAndPlaceScript = GetComponent<PickUpAndPlace>();
-            if (pickUpAndPlaceScript == null)
-            {
-                Debug.LogError("PickUpAndPlace script is not assigned or found on this GameObject.");
-            }
-        }
 
         if (pickFromPackageScript == null)
-        {
             pickFromPackageScript = GetComponent<PickFromPackage>();
-            if (pickFromPackageScript == null)
-            {
-                Debug.LogError("PickUpFromPackage script is not assigned or found on this GameObject.");
-            }
-        }
 
         if (placeOnTrayScript == null)
-        {
             placeOnTrayScript = GetComponent<PlaceOnTray>();
-            if (placeOnTrayScript == null)
-            {
-                Debug.LogError("PlaceOnTray script is not assigned or found on this GameObject.");
-            }
-        }
 
         if (grillPlacingRaycast == null)
-        {
             grillPlacingRaycast = GetComponent<GrillPlacingRaycast>();
-            if (grillPlacingRaycast == null)
-            {
-                Debug.LogError("GrillPlacingRaycast script is not assigned or found on this GameObject.");
-            }
-        }
+
+        if (foodContainerInteraction == null)
+            foodContainerInteraction = GetComponent<FoodContainerInteraction>();
     }
 
     void Update()
@@ -52,6 +32,6 @@ public class InteractionManager : MonoBehaviour
         pickFromPackageScript.HandleEButtonClick();
         placeOnTrayScript.HandleFButtonClick();
         grillPlacingRaycast.HandleCButtonClick();
-
+        foodContainerInteraction.HandleFButtonClick();
     }
 }

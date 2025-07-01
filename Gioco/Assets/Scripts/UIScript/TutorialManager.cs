@@ -62,11 +62,11 @@ public class TutorialManager : MonoBehaviour
 
         //cottura carne
         tutorialText.text = "Move the grill up and down by pressing 'R' and place the meat on it by pressing 'C' to start cooking it.";
-        yield return new WaitUntil(() => grillCookingManager.isCooking.Any(c => c)); //questa funzione del linq controlla se almeno un elemento dell'array isCooking è true
+        yield return new WaitUntil(() => grillCookingManager.IsCooking.Any(c => c)); //questa funzione del linq controlla se almeno un elemento dell'array isCooking è true
 
         //attesa cotture
         tutorialText.text = "Wait for the meat to cook.";
-        yield return new WaitForSeconds(grillCookingManager.cookingTime);
+        yield return new WaitForSeconds(grillCookingManager.CookingTime);
 
         //metti carne cotta nella vaschetta
         tutorialText.text = "Place the cooked meat in the container by pressing 'Q' on the grill and press 'F' on the container to pick it up.";

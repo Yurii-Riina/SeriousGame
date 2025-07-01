@@ -18,36 +18,29 @@ public class GrillPlacingRaycast : MonoBehaviour
             Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
             if (Physics.Raycast(ray, out RaycastHit hit, range))
             {
-                // Cerchiamo un oggetto che in gerarchia abbia GrillSlotPlacer
-                Transform current = hit.collider.transform;
-                GrillSlotPlacer placer = null;
-
                 CanBePlacedOnGrill canBePlaced = held.GetComponent<CanBePlacedOnGrill>();
-                if(canBePlaced == null || !canBePlaced.canBePlacedOnGrill)
+                if (canBePlaced == null || !canBePlaced.canBePlacedOnGrill)
                 {
                     Debug.LogWarning("L'oggetto non può essere piazzato sul grill.");
                     return;
                 }
 
-                while (current != null)
+                // Cerchiamo il GrillCookingManager
+                GrillCookingManager cookingManager = hit.collider.GetComponentInParent<GrillCookingManager>();
+                if (cookingManager != null)
                 {
-                    placer = current.GetComponent<GrillSlotPlacer>();
-                    if (placer != null)
-                        break;
-
-                    current = current.parent;
-                }
-
-                if (placer != null)
-                {
-                    if (placer.TryPlaceObject(held))
+                    if (cookingManager.TryPlaceObject(held))
                     {
                         pickUpAndPlace.ClearHeldObject();
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Nessuno slot libero nel GrillCookingManager.");
                     }
                 }
                 else
                 {
-                    Debug.LogWarning("Nessun GrillSlotPlacer trovato nel target colpito.");
+                    Debug.LogWarning("Nessun GrillCookingManager trovato sul target.");
                 }
             }
             else

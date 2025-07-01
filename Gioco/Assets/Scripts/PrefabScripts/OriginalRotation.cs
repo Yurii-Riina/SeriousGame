@@ -20,7 +20,7 @@ public class OriginalRotation : MonoBehaviour
         }
         else if (gameObject.name.Contains("Tray"))
         {
-            originalEulerRotation = new Vector3(-90f, 0f, 0f);
+            originalEulerRotation = new Vector3(-90f, 180f, 0f);
         }
         else if (gameObject.name.Contains("BottomUncookedBread"))
         {

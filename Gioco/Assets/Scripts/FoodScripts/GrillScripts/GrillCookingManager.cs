@@ -1,13 +1,21 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GrillCookingManager : MonoBehaviour
 {
     [Header("Slot di appoggio")]
     [SerializeField] private Transform[] grillSlots;
 
-    [Header("Prefab")]
-    [SerializeField] private GameObject cookedHamburgerPrefab;
+    [System.Serializable]
+    public class GrillablePrefab
+    {
+        public GrillableType type;
+        public GameObject cookedPrefab;
+    }
+
+    [Header("Prefab cotti")]
+    [SerializeField] private List<GrillablePrefab> cookedPrefabs;
 
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
@@ -17,13 +25,13 @@ public class GrillCookingManager : MonoBehaviour
     [SerializeField] private AudioClip finishedSound;
 
     [Header("Parametri")]
-    public float cookingTime = 5f; //messo publico per il tutorial
-
-    [Header("Gestione contenitore")]
-    [SerializeField] private HamburgerContainerFixedManager containerManager;
+    [SerializeField] private float cookingTime = 5f;
 
     private bool[] isSlotOccupied;
-    [HideInInspector] public bool[] isCooking; //pubblico perchÃ¨ ci serve per il tutorial
+    private bool[] isCooking;
+
+    public bool[] IsCooking => isCooking;
+    public float CookingTime => cookingTime;
 
     private void Awake()
     {
@@ -31,25 +39,25 @@ public class GrillCookingManager : MonoBehaviour
         isCooking = new bool[grillSlots.Length];
     }
 
-    /// <summary>
-    /// Piazza un hamburger nello slot libero.
-    /// </summary>
+    private void Update()
+    {
+        // Ogni frame verifica se gli slot si sono svuotati
+        for (int i = 0; i < grillSlots.Length; i++)
+        {
+            if (grillSlots[i].childCount == 0)
+            {
+                isSlotOccupied[i] = false;
+            }
+        }
+    }
+
     public bool TryPlaceObject(GameObject obj)
     {
         for (int i = 0; i < grillSlots.Length; i++)
         {
             if (!isSlotOccupied[i])
             {
-                obj.transform.SetParent(grillSlots[i]);
-                obj.transform.localPosition = Vector3.zero;
-                obj.transform.localRotation = Quaternion.identity;
-
-                Rigidbody rb = obj.GetComponent<Rigidbody>();
-                if (rb != null)
-                    rb.isKinematic = true;
-
-                isSlotOccupied[i] = true;
-                Debug.Log($"Hamburger piazzato nello slot {i}");
+                PlaceInSlot(obj, i);
                 return true;
             }
         }
@@ -59,15 +67,55 @@ public class GrillCookingManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Avvia la cottura quando chiudi la griglia.
+    /// Prova a piazzare l'oggetto nello slot indicato.
     /// </summary>
+    public bool TryPlaceObjectInSlot(GameObject obj, int index)
+    {
+        if (index < 0 || index >= grillSlots.Length)
+        {
+            Debug.LogWarning("Indice slot non valido.");
+            return false;
+        }
+
+        if (isSlotOccupied[index])
+        {
+            Debug.LogWarning($"Slot {index} già occupato.");
+            return false;
+        }
+
+        PlaceInSlot(obj, index);
+        return true;
+    }
+
+    private void PlaceInSlot(GameObject obj, int index)
+    {
+        obj.transform.SetParent(grillSlots[index]);
+
+        var grillable = obj.GetComponent<Grillable>();
+        if (grillable != null && grillable.type == GrillableType.Bacon)
+        {
+            obj.transform.localPosition = new Vector3(0, 0f, 0.015f);
+        }
+        else
+        {
+            obj.transform.localPosition = Vector3.zero;
+        }
+
+        obj.transform.localRotation = Quaternion.identity;
+
+        Rigidbody rb = obj.GetComponent<Rigidbody>();
+        if (rb != null)
+            rb.isKinematic = true;
+
+        isSlotOccupied[index] = true;
+        Debug.Log($"Oggetto piazzato nello slot {index}");
+    }
+
     public void StartCooking()
     {
         for (int i = 0; i < grillSlots.Length; i++)
         {
-            bool slotHasObject = grillSlots[i].childCount > 0;
-
-            if (slotHasObject && !isCooking[i])
+            if (grillSlots[i].childCount > 0 && !isCooking[i])
             {
                 StartCoroutine(CookSlot(i));
             }
@@ -79,9 +127,6 @@ public class GrillCookingManager : MonoBehaviour
         Debug.Log("Cottura iniziata.");
     }
 
-    /// <summary>
-    /// Suono di apertura griglia.
-    /// </summary>
     public void PlayOpenSound()
     {
         if (audioSource && grillOpenSound)
@@ -98,29 +143,53 @@ public class GrillCookingManager : MonoBehaviour
         yield return new WaitForSeconds(cookingTime);
 
         Transform slot = grillSlots[index];
-        Transform rawBurger = slot.childCount > 0 ? slot.GetChild(0) : null;
+        Transform rawItem = slot.childCount > 0 ? slot.GetChild(0) : null;
 
-        if (rawBurger != null)
+        if (rawItem != null)
         {
-            Destroy(rawBurger.gameObject);
+            var grillable = rawItem.GetComponent<Grillable>();
+            if (grillable == null)
+            {
+                Debug.LogWarning("Oggetto nello slot non ha Grillable.");
+                yield break;
+            }
 
-            GameObject cookedBurger = Instantiate(
-                cookedHamburgerPrefab,
+            GameObject prefab = cookedPrefabs.Find(p => p.type == grillable.type)?.cookedPrefab;
+            if (prefab == null)
+            {
+                Debug.LogError("Prefab cotto mancante per " + grillable.type);
+                yield break;
+            }
+
+            Destroy(rawItem.gameObject);
+
+            GameObject cooked = Instantiate(
+                prefab,
                 slot.position,
                 slot.rotation,
                 slot
             );
 
-            cookedBurger.name = "CookedMeat";
+            // Offset per bacon
+            var grillableCooked = cooked.GetComponent<Grillable>();
+            if (grillableCooked != null && grillableCooked.type == GrillableType.Bacon)
+            {
+                cooked.transform.localPosition = new Vector3(0, 0f, 0.015f);
+            }
+            else
+            {
+                cooked.transform.localPosition = Vector3.zero;
+            }
 
-            Debug.Log($"Slot {index}: Cottura completata!");
+            Debug.Log($"Slot {index}: Cottura completata per {grillable.type}.");
 
             if (audioSource && finishedSound)
                 audioSource.PlayOneShot(finishedSound);
         }
 
         isCooking[index] = false;
-        isSlotOccupied[index] = false;
+        // Qui non azzero isSlotOccupied perché il nuovo oggetto cotto resta nello slot
+        // Sarà l'Update() a liberarlo quando lo togli
     }
 
     public Transform[] GetSlots()

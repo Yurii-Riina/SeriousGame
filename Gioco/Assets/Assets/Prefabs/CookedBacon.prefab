@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 1833095854126957816}
   - component: {fileID: 5175851839463508676}
   - component: {fileID: -7520542291906456491}
+  - component: {fileID: -5071508830043260530}
+  - component: {fileID: 1734493190101071649}
   m_Layer: 0
   m_Name: CookedBacon
   m_TagString: Pickable
@@ -31,8 +33,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.6532815, y: 0.27059805, z: 0.27059805, w: 0.6532815}
   m_LocalPosition: {x: -14.306, y: 1.067, z: -43.058}
-  m_LocalScale: {x: 6, y: 6, z: 6}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 11, y: 11, z: 11}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1023943780608945177}
   m_Father: {fileID: 0}
@@ -150,6 +152,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd730ed9707a481408cc39522da094c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  originalScale: {x: 0, y: 0, z: 0}
+--- !u!114 &-5071508830043260530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2614034248400198740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdb6e1d49359aae44995fa8d9599df9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1734493190101071649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2614034248400198740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef13a228c2c40ff4f9503fea4f4b9f21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 1
 --- !u!1 &2853949922536479002
 GameObject:
   m_ObjectHideFlags: 0

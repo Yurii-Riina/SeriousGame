@@ -89,7 +89,7 @@ public class PlaceOnTray : MonoBehaviour
                     {
                         Debug.Log($"[PlaceOnTray] Posizionamento '{heldName}' su '{matchingStackPoint}' del tray: {currentTray.name}");
                         pickUpAndPlaceScript.PlaceObjectAt(stackPointTransform);
-                        heldObject.transform.SetParent(currentTray); 
+                        heldObject.transform.SetParent(currentTray);
                     }
                     else
                     {
