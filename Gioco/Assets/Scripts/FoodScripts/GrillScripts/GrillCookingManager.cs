@@ -79,7 +79,7 @@ public class GrillCookingManager : MonoBehaviour
 
         if (isSlotOccupied[index])
         {
-            Debug.LogWarning($"Slot {index} gi‡ occupato.");
+            Debug.LogWarning($"Slot {index} gi√† occupato.");
             return false;
         }
 
@@ -170,6 +170,8 @@ public class GrillCookingManager : MonoBehaviour
                 slot
             );
 
+            cooked.name = prefab.name;
+
             // Offset per bacon
             var grillableCooked = cooked.GetComponent<Grillable>();
             if (grillableCooked != null && grillableCooked.type == GrillableType.Bacon)
@@ -188,8 +190,8 @@ public class GrillCookingManager : MonoBehaviour
         }
 
         isCooking[index] = false;
-        // Qui non azzero isSlotOccupied perchÈ il nuovo oggetto cotto resta nello slot
-        // Sar‡ l'Update() a liberarlo quando lo togli
+        // Qui non azzero isSlotOccupied perch√® il nuovo oggetto cotto resta nello slot
+        // Sar√† l'Update() a liberarlo quando lo togli
     }
 
     public Transform[] GetSlots()

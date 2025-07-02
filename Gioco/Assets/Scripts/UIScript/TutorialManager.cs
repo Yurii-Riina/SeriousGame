@@ -14,7 +14,40 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private PlaceOnTray placeOnTrayScript;
     [SerializeField] private GrillCookingManager grillCookingManager;
     private Coroutine tutorialCoroutine;
-    
+
+    void Awake()
+    {
+        if (tutorialText == null)
+        {
+            Debug.LogError("Tutorial Text is not assigned in the inspector.");
+        }
+
+        if (hand == null)
+        {
+            Debug.LogError("Hand Transform is not assigned in the inspector.");
+        }
+
+        if (playerCamera == null)
+        {
+            Debug.LogError("Player Camera is not assigned in the inspector.");
+        }
+
+        if (pickUpAndPlaceScript == null)
+        {
+            Debug.LogError("PickUpAndPlace script is not assigned in the inspector.");
+        }
+
+        if (placeOnTrayScript == null)
+        {
+            Debug.LogError("PlaceOnTray script is not assigned in the inspector.");
+        }
+
+        if (grillCookingManager == null)
+        {
+            Debug.LogError("GrillCookingManager script is not assigned in the inspector.");
+        }
+
+    }
     void Start()
     {
         tutorialCoroutine =StartCoroutine(RunTutorial());
@@ -23,7 +56,7 @@ public class TutorialManager : MonoBehaviour
         void Update()
     {
         // Controlla se l'utente preme ESC per saltare il tutorial
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.P))
         {
             SkipTutorial();
         }
@@ -43,7 +76,11 @@ public class TutorialManager : MonoBehaviour
     IEnumerator RunTutorial()
     {
         //inizio gioco
-        tutorialText.text = "Welcome to the game! Use WASD to move around and move the mouse to control the camera. (You can skip the tutorial by pressing ESC)";
+        tutorialText.text = "Welcome to the game! Use WASD to move around and move the mouse to control the camera.";
+        yield return new WaitForSeconds(4f);
+
+        //skip
+        tutorialText.text = "You can skip the tutorial by pressing ESC";
         yield return new WaitForSeconds(4f);
 
         //prendere gli oggetti
