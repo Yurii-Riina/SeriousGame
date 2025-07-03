@@ -24,11 +24,15 @@ public class OriginalRotation : MonoBehaviour
         }
         else if (gameObject.name.Contains("BottomUncookedBread"))
         {
-            originalEulerRotation = new Vector3(-90, 0, 0);
+            originalEulerRotation = new Vector3(-90f, 0f, 0f);
         }
         else if (gameObject.name.Contains("TopUncookedBread"))
         {
-            originalEulerRotation = new Vector3(90, 0, 0);
+            originalEulerRotation = new Vector3(90f, 0f, 0f);
+        }
+        else if (gameObject.name.Contains("BottomCookedBread"))
+        {
+            originalEulerRotation = new Vector3(-90f, 180f, 0f);
         }
     }
 }
