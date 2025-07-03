@@ -3,7 +3,9 @@ using UnityEngine;
 public enum GrillableType
 {
     Hamburger,
-    Bacon
+    Bacon,
+    Fries,
+    Nuggets
 }
 
 public class Grillable : MonoBehaviour

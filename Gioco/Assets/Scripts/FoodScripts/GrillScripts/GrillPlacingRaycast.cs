@@ -21,15 +21,15 @@ public class GrillPlacingRaycast : MonoBehaviour
                 CanBePlacedOnGrill canBePlaced = held.GetComponent<CanBePlacedOnGrill>();
                 if (canBePlaced == null || !canBePlaced.canBePlacedOnGrill)
                 {
-                    Debug.LogWarning("L'oggetto non può essere piazzato sul grill.");
+                    Debug.LogWarning("L'oggetto non può essere piazzato su questa macchina.");
                     return;
                 }
 
-                // Cerchiamo il GrillCookingManager
-                GrillCookingManager cookingManager = hit.collider.GetComponentInParent<GrillCookingManager>();
-                if (cookingManager != null)
+                // 1️⃣ Verifica GrillCookingManager
+                GrillCookingManager grillManager = hit.collider.GetComponentInParent<GrillCookingManager>();
+                if (grillManager != null)
                 {
-                    if (cookingManager.TryPlaceObject(held))
+                    if (grillManager.TryPlaceObject(held))
                     {
                         pickUpAndPlace.ClearHeldObject();
                     }
@@ -37,11 +37,33 @@ public class GrillPlacingRaycast : MonoBehaviour
                     {
                         Debug.LogWarning("Nessuno slot libero nel GrillCookingManager.");
                     }
+                    return;
                 }
-                else
+
+                // 2️⃣ Verifica FryerController
+                FryerBasketMover fryerController = hit.collider.GetComponentInParent<FryerBasketMover>();
+                if (fryerController != null)
                 {
-                    Debug.LogWarning("Nessun GrillCookingManager trovato sul target.");
+                    FryerSlotManager fryerSlots = fryerController.GetComponent<FryerSlotManager>();
+                    if (fryerSlots != null)
+                    {
+                        if (fryerSlots.TryPlaceObject(held))
+                        {
+                            pickUpAndPlace.ClearHeldObject();
+                        }
+                        else
+                        {
+                            Debug.LogWarning("Nessuno slot libero nella Fryer.");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError("FryerController trovato ma manca FryerSlotManager.");
+                    }
+                    return;
                 }
+
+                Debug.LogWarning("Nessuna macchina di cottura trovata sul target.");
             }
             else
             {

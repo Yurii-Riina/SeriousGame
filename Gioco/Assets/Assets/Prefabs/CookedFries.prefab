@@ -186,6 +186,8 @@ GameObject:
   - component: {fileID: 1568519265176603757}
   - component: {fileID: 7380830055612395232}
   - component: {fileID: 31023135077639998}
+  - component: {fileID: 657843078806094271}
+  - component: {fileID: -6172134464344867511}
   m_Layer: 0
   m_Name: CookedFries
   m_TagString: Pickable
@@ -274,6 +276,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd730ed9707a481408cc39522da094c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  originalScale: {x: 0, y: 0, z: 0}
+--- !u!114 &657843078806094271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5172039269788134782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef13a228c2c40ff4f9503fea4f4b9f21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 2
+--- !u!114 &-6172134464344867511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5172039269788134782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 415e4d0fcf3808746a08b0ad663d9a14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canBePlacedOnGrill: 1
 --- !u!1 &5816181599639512242
 GameObject:
   m_ObjectHideFlags: 0
