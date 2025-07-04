@@ -37,6 +37,12 @@ public class PlaceOnTray : MonoBehaviour
         stackOnTrayDict = new Dictionary<string, List<string>>();
         foreach (var stack in stackOnTrayList)
         {
+            if (stack.placeableObject == null)
+            {
+                Debug.LogWarning($"[PlaceOnTray] Uno stack ha placeableObject nullo (stackPoint: {stack.stackPointOnTrayName})");
+                continue;
+            }
+
             string objectName = stack.placeableObject.name;
 
             if (!stackOnTrayDict.ContainsKey(stack.stackPointOnTrayName))

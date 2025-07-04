@@ -1,31 +1,28 @@
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections.Generic;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class ClientAI : MonoBehaviour
 {
-    [Header("Riferimenti")]
     public Transform spawnPoint;
     public Transform[] orderPoints;
     public Transform endRoute;
 
-    [Header("Impostazioni ordine")]
-    [Tooltip("Tempo massimo di attesa prima che il client si arrabbi.")]
     public float maxWaitTime = 240f;
-
-    [Header("Impostazioni movimento")]
-    [Tooltip("Velocità di movimento del client.")]
     public float moveSpeed = 3.5f;
-
-    [Tooltip("Distanza per il despawn del client.")]
     public float despawnDistanceThreshold = 1.5f;
 
-    public int assignedOrderPoint = -1;
+    [HideInInspector] public int assignedOrderPoint = -1;
 
     private NavMeshAgent agent;
     private float waitTimer = 0f;
     private bool isOrderingNow = false;
+    private bool orderShown = false;
+
+    private float movingTimer = 0f;
+    private const float movingTimeout = 15f;
+    private float leavingTimer = 0f;
+    private const float leavingTimeout = 10f;
 
     public ClientState state;
     public Order currentOrder { get; private set; }
@@ -34,41 +31,47 @@ public class ClientAI : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         agent.speed = moveSpeed;
-    }
 
-    private void Start()
-    {
-        if (spawnPoint == null)
-            spawnPoint = ClientQueue.Instance.spawnPoint;
+        if (spawnPoint != null)
+        {
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(spawnPoint.position, out hit, 2f, NavMesh.AllAreas))
+            {
+                agent.Warp(hit.position);
+            }
+        }
 
-        if (orderPoints == null || orderPoints.Length == 0)
-            orderPoints = ClientQueue.Instance.orderPoints;
-
-        if (endRoute == null)
-            endRoute = ClientQueue.Instance.endRoute;
-
-        transform.position = spawnPoint.position;
-        transform.rotation = spawnPoint.rotation;
-
-        state = ClientState.MovingToOrder;
         ClientQueue.Instance.JoinQueue(this);
     }
 
     private void Update()
     {
+        if (orderPoints == null || assignedOrderPoint < 0 || assignedOrderPoint >= orderPoints.Length)
+        {
+            return;
+        }
+
         switch (state)
         {
             case ClientState.MovingToOrder:
                 HandleMovingToOrder();
                 break;
-
             case ClientState.WaitingInQueue:
                 HandleWaitingInQueue();
                 break;
-
             case ClientState.Leaving:
                 HandleLeaving();
                 break;
+        }
+
+        if (state == ClientState.Ordering && !orderShown)
+        {
+            float dist = Vector3.Distance(transform.position, orderPoints[assignedOrderPoint].position);
+            if (dist <= 2.0f)
+            {
+                EventManager.ClientHasStartedOrdering(this);
+                orderShown = true;
+            }
         }
     }
 
@@ -78,25 +81,33 @@ public class ClientAI : MonoBehaviour
             Vector3.Distance(transform.position, agent.destination) < 0.2f &&
             !agent.pathPending)
         {
-            state = ClientState.WaitingInQueue;
+            state = ClientState.Ordering;
             waitTimer = 0f;
         }
     }
 
     private void HandleWaitingInQueue()
     {
-        if (Vector3.Distance(transform.position, agent.destination) < 0.2f &&
-            !agent.pathPending)
+        if (!agent.pathPending && agent.remainingDistance < 0.2f)
         {
+            if (!isOrderingNow)
+            {
+                StartOrdering();
+            }
+
             waitTimer += Time.deltaTime;
             if (waitTimer >= maxWaitTime)
+            {
                 GoAngry();
+            }
         }
     }
 
     private void HandleLeaving()
     {
-        if (!agent.pathPending && agent.remainingDistance <= despawnDistanceThreshold)
+        leavingTimer += Time.deltaTime;
+
+        if ((!agent.pathPending && agent.remainingDistance <= despawnDistanceThreshold) || leavingTimer > leavingTimeout)
         {
             Destroy(gameObject);
         }
@@ -105,8 +116,21 @@ public class ClientAI : MonoBehaviour
     public void AssignOrderPoint(int index, Vector3 queuePosition)
     {
         assignedOrderPoint = index;
-        agent.SetDestination(queuePosition);
+
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(queuePosition, out hit, 2f, NavMesh.AllAreas))
+        {
+            StartCoroutine(SetDestinationNextFrame(hit.position));
+        }
+
         state = ClientState.MovingToOrder;
+        movingTimer = waitTimer = leavingTimer = 0f;
+    }
+
+    private System.Collections.IEnumerator SetDestinationNextFrame(Vector3 pos)
+    {
+        yield return null;
+        agent.SetDestination(pos);
     }
 
     public void StartOrdering()
@@ -116,13 +140,9 @@ public class ClientAI : MonoBehaviour
         currentOrder = Order.GenerateRandomOrder();
         state = ClientState.Ordering;
         isOrderingNow = true;
-        Debug.Log($"{name} ha ordinato: {GetOrderDescription()}");
-
-        // Notifica agli ascoltatori che il cliente ha iniziato un ordine
-        EventManager.ClientHasStartedOrdering(this);
     }
 
-    public bool TryDeliverOrder(List<Ingredient> delivered)
+    public bool TryDeliverOrder(System.Collections.Generic.List<Ingredient> delivered)
     {
         if (currentOrder == null || !isOrderingNow)
             return false;
@@ -134,7 +154,6 @@ public class ClientAI : MonoBehaviour
         }
         else
         {
-            // feedback: ordine errato
             return false;
         }
     }
@@ -144,28 +163,25 @@ public class ClientAI : MonoBehaviour
         if (!isOrderingNow) return;
 
         isOrderingNow = false;
-        currentOrder = null; // Destroy the order
-        Debug.Log($"{name} ha completato l'ordine e sta lasciando il ristorante.");
+        currentOrder = null;
         ClientQueue.Instance.ReleasePoint(assignedOrderPoint);
         EventManager.ClientWasServed(this);
         state = ClientState.Leaving;
         agent.SetDestination(endRoute.position);
+        leavingTimer = 0f;
     }
 
     private void GoAngry()
     {
-        Debug.Log($"{name} si è arrabbiato!");
-        currentOrder = null; // Destroy the order
+        currentOrder = null;
         ClientQueue.Instance.ReleasePoint(assignedOrderPoint);
         EventManager.ClientGotAngry(this);
         state = ClientState.Leaving;
         agent.SetDestination(endRoute.position);
+        leavingTimer = 0f;
     }
 
-    public bool IsOrdering()
-    {
-        return state == ClientState.Ordering && isOrderingNow;
-    }
+    public bool IsOrdering() => state == ClientState.Ordering && isOrderingNow;
 
     public string GetOrderDescription()
     {

@@ -6,46 +6,49 @@ public class DeliverOrder : MonoBehaviour
 {
     [SerializeField] private Camera playerCamera;
     [SerializeField] private Transform hand;
-    [SerializeField] private PickUpAndPlace pickUpAndPlaceScript;
     [SerializeField] private PlaceOnTray placeOnTrayScript;
-    [SerializeField] private Order order;
-    void Awake()
-    {
-        if (playerCamera == null)
-            playerCamera = Camera.main;
-
-        if (hand == null)
-            Debug.LogError("Hand transform is not assigned in the inspector.");
-
-        if (pickUpAndPlaceScript == null)
-            pickUpAndPlaceScript = GetComponent<PickUpAndPlace>();
-
-        if (placeOnTrayScript == null)
-            placeOnTrayScript = GetComponent<PlaceOnTray>(); 
-    }
+    [SerializeField] private float interactionRange = 3f;
 
     void Update()
     {
-        Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-        if (Physics.Raycast(ray, out RaycastHit hit, pickUpAndPlaceScript.pickUpRange))
+        if (Input.GetMouseButtonDown(0))
         {
-            if (hit.collider.CompareTag("Client") && Input.GetMouseButtonDown(0) && hand.GetChild(0).name.Contains("Tray"))
-            {
-                bool isRight = TryDeliverOrder(hand.GetChild(0).gameObject);
-                Debug.Log(isRight ? "Order delivered successfully!" : "Order is incorrect!");
-            }
+            TryDeliver();
         }
     }
 
-    private bool TryDeliverOrder(GameObject tray)
+    private void TryDeliver()
     {
-        List<GameObject> trayObjects = placeOnTrayScript.GetObjectsOnTray(tray.transform);
-        Debug.Log("Objects on tray: " + string.Join(", ", trayObjects.Select(go => go.name)));
-        List<Ingredient> ingredientsOnTray = placeOnTrayScript.ConvertObjectsToIngredients(trayObjects);
+        if (hand.childCount == 0)
+            return;
 
-        Debug.Log("Ingredients on tray: " + string.Join(", ", ingredientsOnTray));
-        bool orderIsCorrect = order.Matches(ingredientsOnTray);
+        GameObject heldObject = hand.GetChild(0).gameObject;
 
-        return orderIsCorrect;
+        if (!heldObject.name.Contains("Tray"))
+            return;
+
+        Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+        if (Physics.Raycast(ray, out RaycastHit hit, interactionRange))
+        {
+            ClientAI client = hit.collider.GetComponent<ClientAI>();
+            if (client != null && client.IsOrdering())
+            {
+                var trayObjects = placeOnTrayScript.GetObjectsOnTray(heldObject.transform);
+                var ingredients = placeOnTrayScript.ConvertObjectsToIngredients(trayObjects);
+
+                bool correct = client.TryDeliverOrder(ingredients);
+
+                if (correct)
+                {
+                    Debug.Log($"✅ Ordine corretto per {client.name}");
+                    // TODO: Suono di successo, animazione, svuotare vassoio
+                }
+                else
+                {
+                    Debug.Log($"❌ Ordine ERRATO per {client.name}");
+                    // TODO: Feedback errore
+                }
+            }
+        }
     }
 }
