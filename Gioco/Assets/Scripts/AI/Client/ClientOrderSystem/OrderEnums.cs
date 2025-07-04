@@ -20,6 +20,7 @@ public enum Ingredient
     Tomato
 }
 
+
 /// <summary>
 /// Burger types.
 /// </summary>

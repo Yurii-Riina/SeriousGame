@@ -252,8 +252,9 @@ public class PickUpAndPlace : MonoBehaviour
 
                                 // Istanziamo il formaggio fuso
                                 GameObject melted = Instantiate(meltable.meltedPrefab, pos, rot);
+                                melted.name = meltable.meltedPrefab.name;
 
-                                // ⬇️ Se vuoi piazzarlo nello StackPoint
+                                // Se vuoi piazzarlo nello StackPoint
                                 melted.transform.position = currentStackPoint.position;
 
                                 // Imposta la scala originale se serve

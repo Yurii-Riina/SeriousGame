@@ -13,7 +13,7 @@ public class ToasterManager : MonoBehaviour
     [SerializeField] private GameObject cookedTopBreadPrefab;
 
     [Header("Tempo di cottura")]
-    [SerializeField] private float cookingTime = 5f;
+    public float cookingTime = 5f;
 
     [Header("Riferimenti")]
     [SerializeField] private Camera playerCamera;
@@ -21,6 +21,7 @@ public class ToasterManager : MonoBehaviour
     [SerializeField] private PickUpAndPlace pickUpAndPlace;
 
     private bool[] isSlotOccupied;
+    public bool[] IsCooking => isSlotOccupied;
     private float[] cookingTimers;
     private GameObject[] currentRawBread;
     private GameObject[] correspondingCookedPrefab;
@@ -100,7 +101,7 @@ public class ToasterManager : MonoBehaviour
             else if (breadType.kind == BreadKind.Top)
                 targetSlotIndex = 1;
 
-            // Controlla se lo slot è libero
+            // Controlla se lo slot Ã¨ libero
             if (targetSlotIndex >= 0 && targetSlotIndex < loadSlots.Length)
             {
                 if (!isSlotOccupied[targetSlotIndex] && loadSlots[targetSlotIndex].childCount == 0)
@@ -111,7 +112,7 @@ public class ToasterManager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogWarning($"Lo slot {targetSlotIndex} per il pane {breadType.kind} è occupato.");
+                    Debug.LogWarning($"Lo slot {targetSlotIndex} per il pane {breadType.kind} ï¿½ occupato.");
                     return;
                 }
             }
@@ -160,6 +161,8 @@ public class ToasterManager : MonoBehaviour
 
         cooked.transform.localPosition = Vector3.zero;
         cooked.transform.localRotation = Quaternion.identity;
+
+        cooked.name = correspondingCookedPrefab[index].name; //teniamo il nome del prefab per tutorial e placing
 
         isSlotOccupied[index] = false;
         cookingTimers[index] = 0f;

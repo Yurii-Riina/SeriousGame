@@ -27,10 +27,11 @@ public class FryerBasketMover : MonoBehaviour
     [SerializeField] private float moveSpeed = 1f;
     [SerializeField] private float loweredY = -0.2f;
     [SerializeField] private float raisedY = 0f;
-    [SerializeField] private float cookingTime = 8f;
+    public float cookingTime = 8f;
 
     private bool isLowered = false;
     private bool isCooking = false;
+    public bool IsCooking => isCooking;
     private Coroutine cookingCoroutine;
 
     public void ToggleBasket()
@@ -123,6 +124,7 @@ public class FryerBasketMover : MonoBehaviour
 
                 // Istanzia prefab cotto
                 GameObject cooked = Instantiate(prefab);
+                cooked.name = prefab.name;
                 cooked.transform.SetParent(slot);
 
                 // FORZA posizione, rotazione, scala

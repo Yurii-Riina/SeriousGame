@@ -48,7 +48,7 @@ public class Order
         {
             newOrder.Ingredients.Add(Ingredient.Donut);
         }
-
+            Debug.Log("Client expects: " + string.Join(", ", newOrder.Ingredients.Select(i => i.ToString())));
         return newOrder;
     }
 
@@ -80,6 +80,7 @@ public class Order
 
     /// <summary>
     /// Checks if the delivered ingredients match the order.
+    /// Extra ingredients not requested are tolerated.
     /// </summary>
     public bool Matches(List<Ingredient> delivered)
     {
@@ -113,11 +114,13 @@ public class Order
         var otherExpected = expected.Except(burgerContents).ToList();
         var otherProvided = provided.Except(burgerContents).ToList();
 
-        foreach (var item in otherProvided)
+        // Tolleranza per extra: basta che ciò che è richiesto sia presente
+        foreach (var item in otherExpected)
         {
-            if (!otherExpected.Remove(item))
+            if (!otherProvided.Remove(item))
                 return false;
         }
-        return otherExpected.Count == 0;
+
+        return true;
     }
 }
