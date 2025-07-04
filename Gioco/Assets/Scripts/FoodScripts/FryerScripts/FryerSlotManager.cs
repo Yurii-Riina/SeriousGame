@@ -60,7 +60,9 @@ public class FryerSlotManager : MonoBehaviour
 
         // Istanzia prefab corretto
         GameObject spawned = Instantiate(prefabEntry.rawPrefab, slot.position, slot.rotation);
+        spawned.name = prefabEntry.rawPrefab.name;
         spawned.transform.SetParent(slot);
+
         spawned.transform.localPosition = Vector3.zero;
         spawned.transform.localRotation = Quaternion.identity;
 

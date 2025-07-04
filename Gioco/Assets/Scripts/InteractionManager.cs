@@ -28,10 +28,22 @@ public class InteractionManager : MonoBehaviour
 
     void Update()
     {
+        // Mouse sinistro/destro
         pickUpAndPlaceScript.PickPlaceDrop();
+
+        // E per prendere dagli imballaggi
         pickFromPackageScript.HandleEButtonClick();
+
+        // F per mettere sul tray
         placeOnTrayScript.HandleFButtonClick();
+
+        // C per mettere sulla griglia
         grillPlacingRaycast.HandleCButtonClick();
-        foodContainerInteraction.HandleFButtonClick();
+
+        // F per prelevare dai contenitori SOLO se la mano è vuota
+        if (pickUpAndPlaceScript.GetHeldObject() == null)
+        {
+            foodContainerInteraction.HandleFButtonClick();
+        }
     }
 }

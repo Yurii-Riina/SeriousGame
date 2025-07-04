@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 7161994842190889285}
   - component: {fileID: -3374496701921931677}
   - component: {fileID: 7573570712425237885}
-  - component: {fileID: 1874721330197278681}
+  - component: {fileID: -7940798464414043782}
+  - component: {fileID: -7505318752183359322}
   m_Layer: 0
   m_Name: CookedFriesPack
   m_TagString: Pickable
@@ -78,7 +79,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &1874721330197278681
+--- !u!65 &-7940798464414043782
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -97,8 +98,21 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.3, y: 0.7, z: 0.2}
-  m_Center: {x: 0.049090385, y: -0.043096393, z: 0.06263971}
+  m_Size: {x: 0.13318825, y: 0.079924345, z: 0.19999999}
+  m_Center: {x: 0.05158806, y: -0.039705873, z: 0.06263971}
+--- !u!114 &-7505318752183359322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 69525986080742678}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbc3cdbe69be4764db026254c1cb85e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  originalEulerRotation: {x: 90, y: 180, z: 90}
 --- !u!1 &5454991226397329683
 GameObject:
   m_ObjectHideFlags: 0
