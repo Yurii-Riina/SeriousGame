@@ -69,8 +69,8 @@ public class TutorialManager : MonoBehaviour
         {
             StopCoroutine(tutorialCoroutine);
         }
-        // Carica subito la scena desiderata, ad esempio "MainMenu"
-        SceneManager.LoadScene("MainMenu");
+        
+        SceneManager.LoadScene("GameScene");
     }
 
     IEnumerator RunTutorial()
@@ -135,6 +135,6 @@ public class TutorialManager : MonoBehaviour
         tutorialText.text = "Congratulations! You have completed the tutorial. Now you can start playing the game!";
         yield return new WaitForSeconds(7f);
 
-        SceneManager.LoadScene("MainMenu"); //per ora torniamo al menu principale. quando avremo creato il livello di gioco la cambiamo
+        SceneManager.LoadScene("GameScene"); 
     }
 }
