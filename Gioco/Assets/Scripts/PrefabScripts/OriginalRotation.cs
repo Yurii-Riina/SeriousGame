@@ -34,6 +34,11 @@ public class OriginalRotation : MonoBehaviour
         {
             originalEulerRotation = new Vector3(-90f, 180f, 0f);
         }
+        else if (gameObject.name.Contains("CookedFriesPack")) // 🎯 ECCO LA TUA REGOLA
+        {
+            // Prova questa rotazione, che di solito funziona per "distendere" e rivolgere verso l'utente
+            originalEulerRotation = new Vector3(0f, 90f, 0f);
+        }
     }
 }
 

@@ -13,6 +13,8 @@ public class FryerPackagingSpawner : MonoBehaviour
     [Header("Slot di spawn disponibili (14 slot generici)")]
     [SerializeField] private List<Transform> allSpawnSlots;
 
+    public List<Transform> AllSpawnSlots => allSpawnSlots;
+
     private const int MaxPackagesPerInteraction = 4;
 
     void Update()
@@ -86,6 +88,7 @@ public class FryerPackagingSpawner : MonoBehaviour
                 prefabToSpawn = cookedNuggetsPackPrefab;
 
             GameObject spawned = Instantiate(prefabToSpawn, slot.position, slot.rotation);
+            spawned.name = prefabToSpawn.name;
             spawned.transform.SetParent(slot, worldPositionStays: true);
 
             packagesSpawned++;

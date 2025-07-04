@@ -1009,7 +1009,8 @@ GameObject:
   - component: {fileID: 7905583267135991765}
   - component: {fileID: 3474314595168769405}
   - component: {fileID: -7746112095063047837}
-  - component: {fileID: 5905470239875498523}
+  - component: {fileID: 3415018917306043773}
+  - component: {fileID: 7937045760857526685}
   m_Layer: 0
   m_Name: CookedNuggetsPack 1
   m_TagString: Pickable
@@ -1079,7 +1080,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &5905470239875498523
+--- !u!65 &3415018917306043773
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1098,8 +1099,21 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.3, y: 0.7, z: 0.2}
-  m_Center: {x: 0.049090385, y: -0.043096393, z: 0.06263971}
+  m_Size: {x: 0.13318825, y: 0.079924345, z: 0.19999999}
+  m_Center: {x: 0.05158806, y: -0.039705873, z: 0.06263971}
+--- !u!114 &7937045760857526685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5642646922757258681}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbc3cdbe69be4764db026254c1cb85e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  originalEulerRotation: {x: 90, y: 180, z: 90}
 --- !u!1 &5875955001342016042
 GameObject:
   m_ObjectHideFlags: 0

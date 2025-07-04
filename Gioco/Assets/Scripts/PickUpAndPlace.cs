@@ -193,15 +193,24 @@ public class PickUpAndPlace : MonoBehaviour
 
         currentObjectRB.isKinematic = true;
         currentObjectRB.transform.SetParent(null);
-        currentObjectRB.transform.position = stackPoint.position;
-        currentObjectRB.transform.rotation = stackPoint.rotation;
+        currentObjectRB.transform.position = stackPoint.position + new Vector3(0f, 0.02f, 0f);
 
-        // Applica rotazione personalizzata se esiste
-        var rotComponent = currentObjectRB.GetComponent<OriginalRotation>();
-        if (rotComponent != null)
-        {
-            currentObjectRB.transform.localRotation *= Quaternion.Euler(rotComponent.originalEulerRotation);
-        }
+        // Imposta la rotazione assoluta verso la camera del giocatore
+        //Vector3 lookDir = playerCamera.transform.forward;
+        //lookDir.y = 0f; // Mantieni orizzontale
+        //if (lookDir == Vector3.zero)
+        //{
+        //    lookDir = Vector3.forward;
+        //}
+        //Quaternion targetRotation = Quaternion.LookRotation(lookDir, Vector3.up);
+
+        // Imposta la rotazione FISSA, uguale ogni volta
+        Quaternion targetRotation = Quaternion.Euler(0f, 180f, 0f);
+
+        // Aggiungi eventualmente un offset se vuoi inclinarlo
+        targetRotation *= Quaternion.Euler(0f, 0f, 0f); // Qui puoi mettere extra rotazioni se serve
+
+        currentObjectRB.transform.rotation = targetRotation;
 
         var originalScaleComponent = currentObjectRB.GetComponent<OriginalScale>();
         currentObjectRB.transform.localScale = originalScaleComponent ? originalScaleComponent.originalScale : originalScale;

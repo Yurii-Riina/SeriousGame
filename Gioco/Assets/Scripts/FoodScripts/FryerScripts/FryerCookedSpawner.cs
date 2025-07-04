@@ -82,7 +82,9 @@ public class FryerCookedSpawner : MonoBehaviour
 
             // Istanzia il prefab pronto e lo rende figlio dello spawn point
             GameObject spawned = Instantiate(mapping.readyPrefab, mapping.spawnPoint.position, mapping.spawnPoint.rotation);
+            spawned.name = mapping.readyPrefab.name;
             spawned.transform.SetParent(mapping.spawnPoint, worldPositionStays: true);
+
 
             Debug.Log($"Prefab {mapping.readyPrefab.name} spawnato in {mapping.spawnPoint.name} come figlio");
 
