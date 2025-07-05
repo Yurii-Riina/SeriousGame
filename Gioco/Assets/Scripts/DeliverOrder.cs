@@ -94,6 +94,10 @@ public class DeliverOrder : MonoBehaviour
         }
         else
         {
+            client.GoAngry(); // 😡 Fai arrabbiare il client
+            
+            Destroy(held.gameObject);
+            placeOnTrayScript.ClearCurrentTray();
             Debug.Log($"❌ Ordine ERRATO per {client.name}");
         }
     }

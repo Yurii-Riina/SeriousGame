@@ -1,18 +1,35 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using TMPro;
 
-/// <summary>
-/// Mostra e aggiorna gli ordini dei clienti nella UI.
-/// </summary>
 public class OrderDisplay : MonoBehaviour
 {
     [Header("UI References")]
     public Transform orderContainer;
     public GameObject orderUIPrefab;
 
-    private List<(ClientAI client, GameObject uiObject)> activeOrders = new();
+    // Ogni indice corrisponde allo slot di ClientQueue
+    private TMP_Text[] slotTexts;
+    private ClientAI[] slotClients;
+
+    private void Start()
+    {
+        // Crea 4 slot fissi
+        int slots = 4;
+        slotTexts = new TMP_Text[slots];
+        slotClients = new ClientAI[slots];
+
+        for (int i = 0; i < slots; i++)
+        {
+            GameObject go = Instantiate(orderUIPrefab, orderContainer);
+            TMP_Text label = go.GetComponentInChildren<TMP_Text>();
+            if (label != null)
+                label.text = ""; // Vuoto all'inizio
+
+            slotTexts[i] = label;
+            slotClients[i] = null;
+        }
+    }
 
     private void OnEnable()
     {
@@ -29,65 +46,60 @@ public class OrderDisplay : MonoBehaviour
     }
 
     /// <summary>
-    /// Aggiunge l'ordine alla UI quando il cliente arriva al banco.
+    /// Aggiunge o aggiorna lo slot quando il cliente arriva.
     /// </summary>
     private void AddOrder(ClientAI client)
     {
         if (client == null || !client.IsOrdering() || client.currentOrder == null)
+            return;
+
+        int slotIdx = client.assignedOrderPoint;
+        if (slotIdx < 0 || slotIdx >= slotTexts.Length)
         {
+            Debug.LogWarning($"❗ Slot index {slotIdx} fuori range per {client.name}");
             return;
         }
 
-        if (activeOrders.Any(e => e.client == client))
+        // Associa il client allo slot
+        slotClients[slotIdx] = client;
+
+        // Prepara testo
+        List<string> elements = new List<string>();
+
+        if (client.currentOrder.SelectedBurger.HasValue)
+            elements.Add(client.currentOrder.SelectedBurger.Value.ToString());
+
+        foreach (var item in client.currentOrder.Ingredients)
         {
-            return;
-        }
-
-        if (activeOrders.Count >= 4)
-        {
-            return;
-        }
-
-        GameObject go = Instantiate(orderUIPrefab, orderContainer);
-        TMP_Text label = go.GetComponentInChildren<TMP_Text>();
-        if (label != null)
-        {
-            List<string> elements = new List<string>();
-
-            if (client.currentOrder.SelectedBurger.HasValue)
-                elements.Add(client.currentOrder.SelectedBurger.Value.ToString());
-
-            foreach (var item in client.currentOrder.Ingredients)
+            switch (item)
             {
-                switch (item)
-                {
-                    case Ingredient.Donut:
-                    case Ingredient.Fries:
-                    case Ingredient.Nuggets:
-                    case Ingredient.Water:
-                    case Ingredient.CocaCola:
-                    case Ingredient.Fanta:
-                        elements.Add(item.ToString());
-                        break;
-                }
+                case Ingredient.Donut:
+                case Ingredient.Fries:
+                case Ingredient.Nuggets:
+                case Ingredient.Water:
+                case Ingredient.CocaCola:
+                case Ingredient.Fanta:
+                    elements.Add(item.ToString());
+                    break;
             }
-
-            label.text = string.Join("\n", elements);
         }
 
-        activeOrders.Add((client, go));
+        string finalText = string.Join("\n", elements);
+        slotTexts[slotIdx].text = finalText;
     }
 
     /// <summary>
-    /// Rimuove l'ordine dalla UI quando il cliente viene servito o si arrabbia.
+    /// Svuota lo slot quando il cliente viene servito o si arrabbia.
     /// </summary>
     private void RemoveOrder(ClientAI client)
     {
-        var entry = activeOrders.FirstOrDefault(e => e.client == client);
-        if (entry.uiObject != null)
-        {
-            Destroy(entry.uiObject);
-            activeOrders.Remove(entry);
-        }
+        if (client == null) return;
+
+        int slotIdx = client.assignedOrderPoint;
+        if (slotIdx < 0 || slotIdx >= slotTexts.Length)
+            return;
+
+        slotTexts[slotIdx].text = "";
+        slotClients[slotIdx] = null;
     }
 }

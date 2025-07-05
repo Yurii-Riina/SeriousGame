@@ -73,13 +73,13 @@ public class TutorialManager : MonoBehaviour
     }
     void Start()
     {
-        tutorialCoroutine =StartCoroutine(RunTutorial());
+        tutorialCoroutine = StartCoroutine(RunTutorial());
     }
 
     void Update()
     {
         // Controlla se l'utente preme ESC per saltare il tutorial
-        if (Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             SkipTutorial();
         }

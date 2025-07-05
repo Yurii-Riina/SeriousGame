@@ -203,7 +203,7 @@ public class ClientAI : MonoBehaviour
         leavingTimer = 0f;
     }
 
-    private void GoAngry()
+    public void GoAngry()
     {
         currentOrder = null;
         ClientQueue.Instance.ReleasePoint(assignedOrderPoint);
