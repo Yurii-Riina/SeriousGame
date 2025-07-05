@@ -47,6 +47,8 @@ public class ClientSpawner : MonoBehaviour
             ai.orderPoints = ClientQueue.Instance.orderPoints;
             ai.endRoute = ClientQueue.Instance.endRoute;
 
+            ai.InitializeOrder();
+
             yield return new WaitForSeconds(spawnDelay);
         }
     }

@@ -6,6 +6,7 @@ public class OrderManager : MonoBehaviour
     public static OrderManager Instance;
 
     private List<ClientAI> waitingClients = new();
+    public List<ClientAI> waitingQueue = new List<ClientAI>();
 
     private void Awake()
     {
@@ -56,10 +57,26 @@ public class OrderManager : MonoBehaviour
         {
             Debug.Log("✅ Ordine consegnato correttamente.");
             RemoveWaitingClient(client);
+
+            // Se ci sono clienti in coda, attiva il primo
+            if (waitingQueue.Count > 0)
+            {
+                var nextClient = waitingQueue[0];
+                waitingQueue.RemoveAt(0);
+
+                AddWaitingClient(nextClient);
+                nextClient.IsOrderingNow = true;
+                Debug.Log($"🟢 Client {nextClient.name} spostato dalla coda alla lavagna.");
+            }
         }
         else
         {
             Debug.Log("❌ Ordine errato.");
         }
+    }
+
+    public bool HasAvailableSlot()
+    {
+        return waitingClients.Count < 4;
     }
 }

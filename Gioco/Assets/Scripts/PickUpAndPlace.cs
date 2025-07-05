@@ -56,10 +56,11 @@ public class PickUpAndPlace : MonoBehaviour
         {
             string objName = currentObjectRB.name.ToLower();
 
-            // Se è CookedFriesPack o CookedNuggetsPack 1, non droppare
             if (objName.Contains("cookedfriespack") || objName.Contains("cookednuggetspack"))
             {
-                Debug.Log("Non puoi droppare questo oggetto. Puoi solo appoggiarlo sul vassoio.");
+                Debug.Log($"🟢 Oggetto {currentObjectRB.name} distrutto perché non droppabile.");
+                Destroy(currentObjectRB.gameObject);
+                ClearState();
                 return;
             }
 

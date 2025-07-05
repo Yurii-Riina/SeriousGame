@@ -18,7 +18,7 @@ public class ClientAI : MonoBehaviour
     private NavMeshAgent agent;
     private float waitTimer = 0f;
     private bool isOrderingNow = false;
-    private bool orderShown = false;
+    //private bool orderShown = false;
 
     private float movingTimer = 0f;
     private const float movingTimeout = 15f;
@@ -26,6 +26,11 @@ public class ClientAI : MonoBehaviour
 
     public ClientState state;
     public Order currentOrder { get; private set; }
+    public bool IsOrderingNow
+    {
+        get => isOrderingNow;
+        set => isOrderingNow = value;
+    }
 
     private void Awake()
     {
@@ -135,16 +140,22 @@ public class ClientAI : MonoBehaviour
     {
         if (state == ClientState.Leaving) return;
 
-        currentOrder = Order.GenerateRandomOrder();
         Debug.Log($"🟢 Client {name} started ordering: {currentOrder.GetReadableDescription()}");
 
-        // Qui lo aggiungiamo alla lista
-        OrderManager.Instance.AddWaitingClient(this);
+        if (OrderManager.Instance.HasAvailableSlot())
+        {
+            OrderManager.Instance.AddWaitingClient(this);
+            isOrderingNow = true;
+        }
+        else
+        {
+            OrderManager.Instance.waitingQueue.Add(this);
+            isOrderingNow = false;
+            Debug.Log($"🟡 Client {name} messo in coda in attesa di slot libero.");
+        }
 
         state = ClientState.Ordering;
-        isOrderingNow = true;
 
-        // Invia evento
         EventManager.ClientHasStartedOrdering(this);
     }
 
@@ -230,5 +241,14 @@ public class ClientAI : MonoBehaviour
         if (currentOrder != null)
             return currentOrder.Ingredients;
         return new List<Ingredient>();
+    }
+
+    public void InitializeOrder()
+    {
+        if (currentOrder == null)
+        {
+            currentOrder = Order.GenerateRandomOrder();
+            Debug.Log($"🟢 Client {name} inizializza ordine: {currentOrder.GetReadableDescription()}");
+        }
     }
 }
