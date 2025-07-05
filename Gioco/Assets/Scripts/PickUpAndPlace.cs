@@ -77,9 +77,25 @@ public class PickUpAndPlace : MonoBehaviour
 
     private void DropObject()
     {
+        if (currentObjectRB == null) return;
+
         currentObjectRB.isKinematic = false;
         currentObjectRB.useGravity = true;
         currentObjectCollider.enabled = true;
+
+        // Controlla se è un pacchetto di patatine o nuggets
+        string name = currentObjectRB.name.ToLower();
+        if (name.Contains("fries") || name.Contains("nugget"))
+        {
+            // Blocca le rotazioni per sempre
+            currentObjectRB.constraints = RigidbodyConstraints.FreezeRotation;
+        }
+        else
+        {
+            // Sblocca tutto per gli altri oggetti
+            currentObjectRB.constraints = RigidbodyConstraints.None;
+        }
+
         currentObjectRB.transform.SetParent(null);
 
         Debug.Log("Droppato: " + currentObjectRB.name);
@@ -195,22 +211,48 @@ public class PickUpAndPlace : MonoBehaviour
         currentObjectRB.transform.SetParent(null);
         currentObjectRB.transform.position = stackPoint.position + new Vector3(0f, 0.02f, 0f);
 
-        // Imposta la rotazione assoluta verso la camera del giocatore
-        //Vector3 lookDir = playerCamera.transform.forward;
-        //lookDir.y = 0f; // Mantieni orizzontale
-        //if (lookDir == Vector3.zero)
-        //{
-        //    lookDir = Vector3.forward;
-        //}
-        //Quaternion targetRotation = Quaternion.LookRotation(lookDir, Vector3.up);
+        Quaternion rotationOffset = Quaternion.identity;
+        string objName = currentObjectRB.name.ToLower();
 
-        // Imposta la rotazione FISSA, uguale ogni volta
-        Quaternion targetRotation = Quaternion.Euler(0f, 180f, 0f);
+        Debug.Log("Posiziono oggetto con nome: " + objName);
 
-        // Aggiungi eventualmente un offset se vuoi inclinarlo
-        targetRotation *= Quaternion.Euler(0f, 0f, 0f); // Qui puoi mettere extra rotazioni se serve
+        if (objName.Contains("cartonhamburger"))
+        {
+            // Cartone panino ruotato di 180° sull'asse Y
+            rotationOffset = Quaternion.Euler(0f, 0f, 0f);
+        }
+        else if (objName.Contains("cartonfries"))
+        {
+            // Carton Fries disteso come prima
+            rotationOffset = Quaternion.Euler(-90f, 180f, 0f);
+        }
+        else if (objName.Contains("cookedfriespack"))
+        {
+            // Cooked Fries Pack disteso in modo diverso (prova così)
+            rotationOffset = Quaternion.Euler(0f, 180f, 0f);
+        }
+        else if (objName.Contains("cookednuggetspack"))
+        {
+            // Cooked Nuggets Pack disteso in modo chiaro
+            rotationOffset = Quaternion.Euler(0f, 180f, 0f);
+        }
+        else if (objName.Contains("cocacola") || objName.Contains("fanta") || objName.Contains("water"))
+        {
+            // Bibite in piedi
+            rotationOffset = Quaternion.Euler(-90f, 0f, 0f);
+        }
+        else if (objName.Contains("donut"))
+        {
+            // Donut distesa con glassa verso l'alto
+            rotationOffset = Quaternion.Euler(-90f, 0f, 0f);
+        }
+        else
+        {
+            // Default: ruotato di 180° Y
+            rotationOffset = Quaternion.Euler(0f, 180f, 0f);
+        }
 
-        currentObjectRB.transform.rotation = targetRotation;
+        currentObjectRB.transform.rotation = rotationOffset;
 
         var originalScaleComponent = currentObjectRB.GetComponent<OriginalScale>();
         currentObjectRB.transform.localScale = originalScaleComponent ? originalScaleComponent.originalScale : originalScale;
@@ -221,10 +263,8 @@ public class PickUpAndPlace : MonoBehaviour
 
         currentStackPoint = currentObjectRB.transform.Find("StackPoint");
 
-        // Debug: Inizio blocco formaggio
         Debug.Log("INIZIO VERIFICA FUSIONE FORMAGGIO");
 
-        // Verifica se l'oggetto posizionato è un formaggio crudo
         MeltableCheese meltable = currentObjectRB.GetComponent<MeltableCheese>();
         if (meltable != null)
         {
@@ -234,7 +274,6 @@ public class PickUpAndPlace : MonoBehaviour
             {
                 Debug.Log("StackPoint presente: " + currentStackPoint.name);
 
-                // Cerchiamo se sotto c'è un hamburger cotto
                 Transform parent = currentStackPoint.parent;
                 if (parent != null)
                 {
@@ -246,58 +285,30 @@ public class PickUpAndPlace : MonoBehaviour
 
                         if (child.GetComponent<CookedMarker>() != null)
                         {
-                            Debug.Log("Child ha CookedMarker: " + child.name);
+                            Debug.Log("TROVATO HAMBURGER COTTO nello stack. Procedo con sostituzione formaggio.");
 
-                            if (child.name.Contains("Hamburger"))
-                            {
-                                Debug.Log("TROVATO HAMBURGER COTTO nello stack. Procedo con sostituzione formaggio.");
+                            Vector3 pos = currentObjectRB.transform.position;
+                            Quaternion rot = currentObjectRB.transform.rotation;
 
-                                // Salviamo posizione e rotazione
-                                Vector3 pos = currentObjectRB.transform.position;
-                                Quaternion rot = currentObjectRB.transform.rotation;
+                            Destroy(currentObjectRB.gameObject);
 
-                                // Distruggiamo il formaggio crudo
-                                Destroy(currentObjectRB.gameObject);
+                            GameObject melted = Instantiate(meltable.meltedPrefab, pos, rot);
+                            melted.name = meltable.meltedPrefab.name;
 
-                                // Istanziamo il formaggio fuso
-                                GameObject melted = Instantiate(meltable.meltedPrefab, pos, rot);
-                                melted.name = meltable.meltedPrefab.name;
+                            melted.transform.position = currentStackPoint.position;
 
-                                // Se vuoi piazzarlo nello StackPoint
-                                melted.transform.position = currentStackPoint.position;
+                            OriginalScale os = melted.GetComponent<OriginalScale>();
+                            if (os != null)
+                                melted.transform.localScale = os.originalScale;
 
-                                // Imposta la scala originale se serve
-                                OriginalScale os = melted.GetComponent<OriginalScale>();
-                                if (os != null)
-                                    melted.transform.localScale = os.originalScale;
+                            melted.transform.SetParent(parent);
 
-                                // Mettiamo nello stesso parent
-                                melted.transform.SetParent(parent);
+                            Debug.Log("Formaggio CRUDO distrutto e sostituito con prefab fuso: " + meltable.meltedPrefab.name);
 
-                                Debug.Log("Formaggio CRUDO distrutto e sostituito con prefab fuso: " + meltable.meltedPrefab.name);
-
-                                // Fine
-                                break;
-                            }
-                            else
-                            {
-                                Debug.Log("Child con CookedMarker MA nome non contiene 'Hamburger': " + child.name);
-                            }
-                        }
-                        else
-                        {
-                            Debug.Log("Child NON ha CookedMarker: " + child.name);
+                            break;
                         }
                     }
                 }
-                else
-                {
-                    Debug.Log("Parent dello StackPoint è NULL.");
-                }
-            }
-            else
-            {
-                Debug.Log("currentStackPoint è NULL.");
             }
         }
         else
