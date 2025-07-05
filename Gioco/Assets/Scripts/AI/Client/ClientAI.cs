@@ -57,19 +57,19 @@ public class ClientAI : MonoBehaviour
             case ClientState.Leaving:
                 HandleLeaving();
                 break;
-            case ClientState.Ordering:
-                if (!orderShown)
-                {
-                    float dist = Vector3.Distance(transform.position, orderPoints[assignedOrderPoint].position);
-                    if (dist <= 2f)
-                    {
-                        EventManager.ClientHasStartedOrdering(this);
-                        Debug.Log($"🟢 Client {name} started ordering.");
-                        orderShown = true;
-                    }
-                }
-                break;
-        }
+            //case ClientState.Ordering:
+            //    if (!orderShown)
+            //    {
+            //        float dist = Vector3.Distance(transform.position, orderPoints[assignedOrderPoint].position);
+            //        if (dist <= 2f)
+            //        {
+            //            EventManager.ClientHasStartedOrdering(this);
+            //            Debug.Log($"🟢 Client {name} started ordering.");
+            //            orderShown = true;
+            //        }
+            //    }
+            //    break;
+        }   
     }
 
     private void HandleMovingToOrder()
@@ -79,8 +79,8 @@ public class ClientAI : MonoBehaviour
             !agent.pathPending)
         {
             Debug.Log($"🟢 Client {name} reached order point.");
-            state = ClientState.Ordering;
-            waitTimer = 0f;
+
+            StartOrdering();
         }
     }
 
@@ -137,8 +137,15 @@ public class ClientAI : MonoBehaviour
 
         currentOrder = Order.GenerateRandomOrder();
         Debug.Log($"🟢 Client {name} started ordering: {currentOrder.GetReadableDescription()}");
+
+        // Qui lo aggiungiamo alla lista
+        OrderManager.Instance.AddWaitingClient(this);
+
         state = ClientState.Ordering;
         isOrderingNow = true;
+
+        // Invia evento
+        EventManager.ClientHasStartedOrdering(this);
     }
 
     public bool TryDeliverOrder(List<Ingredient> delivered)

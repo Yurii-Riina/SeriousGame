@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.AI;
 
@@ -40,11 +40,16 @@ public class ClientQueue : MonoBehaviour
         if (client.endRoute == null)
             client.endRoute = endRoute;
 
+        // Snappa il cliente sul NavMesh
         NavMeshHit hit;
         if (NavMesh.SamplePosition(client.spawnPoint.position, out hit, 2f, NavMesh.AllAreas))
         {
             client.transform.position = hit.position;
             client.transform.rotation = spawnPoint.rotation;
+        }
+        else
+        {
+            Debug.LogError("❌ ERRORE: SpawnPoint non è sopra il NavMesh. Controlla la scena!");
         }
 
         if (!CanJoinQueue())
@@ -83,7 +88,10 @@ public class ClientQueue : MonoBehaviour
                 occupiedPoints[i] = true;
 
                 client.AssignOrderPoint(i, orderPoints[i].position);
-                client.StartOrdering();
+
+                // 🔥 Importante: NON chiamare StartOrdering qui.
+                // Aspettiamo che il client ci arrivi fisicamente.
+
                 UpdateQueuePositions();
                 break;
             }

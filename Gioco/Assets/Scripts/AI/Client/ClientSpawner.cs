@@ -1,9 +1,11 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public class ClientSpawner : MonoBehaviour
 {
-    public GameObject clientPrefab;
+    [Header("Client Prefabs da spawnare")]
+    public GameObject[] clientPrefabs; // Tutti i prefab NPC qui
+
     public Transform spawnPoint;
 
     public float spawnDelay = 1f;
@@ -20,8 +22,9 @@ public class ClientSpawner : MonoBehaviour
 
     public IEnumerator SpawnClients()
     {
-        if (clientPrefab == null)
+        if (clientPrefabs == null || clientPrefabs.Length == 0)
         {
+            Debug.LogError("⚠️ Nessun prefab assegnato in ClientSpawner.");
             yield break;
         }
 
@@ -32,10 +35,13 @@ public class ClientSpawner : MonoBehaviour
                 yield return new WaitForSeconds(1f);
             }
 
-            var client = Instantiate(clientPrefab);
+            // Scegli un prefab casuale
+            GameObject selectedPrefab = clientPrefabs[Random.Range(0, clientPrefabs.Length)];
+
+            var client = Instantiate(selectedPrefab, spawnPoint.position, spawnPoint.rotation);
             client.name = $"Client_{++spawnedCount}";
 
-            // Assegna i riferimenti PRIMA di attivarlo
+            // Assegna i riferimenti prima di attivarlo
             ClientAI ai = client.GetComponent<ClientAI>();
             ai.spawnPoint = ClientQueue.Instance.spawnPoint;
             ai.orderPoints = ClientQueue.Instance.orderPoints;
