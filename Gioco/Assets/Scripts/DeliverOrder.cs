@@ -6,8 +6,23 @@ public class DeliverOrder : MonoBehaviour
 {
     [SerializeField] private Camera playerCamera;
     [SerializeField] private Transform hand;
+    [SerializeField] private PickUpAndPlace pickUpAndPlaceScript;
     [SerializeField] private PlaceOnTray placeOnTrayScript;
-    [SerializeField] private float interactionRange = 3f;
+
+    void Awake()
+    {
+        if (playerCamera == null)
+            playerCamera = Camera.main;
+
+        if (hand == null)
+            Debug.LogError("Hand transform is not assigned in the inspector.");
+
+        if (pickUpAndPlaceScript == null)
+            pickUpAndPlaceScript = GetComponent<PickUpAndPlace>();
+
+        if (placeOnTrayScript == null)
+            placeOnTrayScript = GetComponent<PlaceOnTray>();
+    }
 
     void Update()
     {
@@ -20,35 +35,66 @@ public class DeliverOrder : MonoBehaviour
     private void TryDeliver()
     {
         if (hand.childCount == 0)
+        {
+            Debug.Log("Non stai tenendo nulla.");
             return;
+        }
 
-        GameObject heldObject = hand.GetChild(0).gameObject;
-
-        if (!heldObject.name.Contains("Tray"))
+        Transform held = hand.GetChild(0);
+        if (!held.name.Contains("Tray"))
+        {
+            Debug.Log("L'oggetto in mano non è un vassoio.");
             return;
+        }
 
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-        if (Physics.Raycast(ray, out RaycastHit hit, interactionRange))
+        if (!Physics.Raycast(ray, out RaycastHit hit, pickUpAndPlaceScript.pickUpRange))
         {
-            ClientAI client = hit.collider.GetComponent<ClientAI>();
-            if (client != null && client.IsOrdering())
-            {
-                var trayObjects = placeOnTrayScript.GetObjectsOnTray(heldObject.transform);
-                var ingredients = placeOnTrayScript.ConvertObjectsToIngredients(trayObjects);
+            Debug.Log("Nessun cliente di fronte.");
+            return;
+        }
 
-                bool correct = client.TryDeliverOrder(ingredients);
+        ClientAI client = hit.collider.GetComponent<ClientAI>();
+        if (client == null)
+        {
+            Debug.Log("Non stai guardando un cliente.");
+            return;
+        }
 
-                if (correct)
-                {
-                    Debug.Log($"✅ Ordine corretto per {client.name}");
-                    // TODO: Suono di successo, animazione, svuotare vassoio
-                }
-                else
-                {
-                    Debug.Log($"❌ Ordine ERRATO per {client.name}");
-                    // TODO: Feedback errore
-                }
-            }
+        if (!client.IsOrdering())
+        {
+            Debug.Log("Il cliente non sta ordinando.");
+            return;
+        }
+
+        // Ingredienti trovati nel vassoio
+        List<Ingredient> trayIngredients = placeOnTrayScript.GetIngredientsFromChildren(held);
+        Debug.Log($"🧾 Ingredienti trovati nel vassoio:\n- {string.Join("\n- ", trayIngredients)}");
+
+
+        // Ingredienti richiesti dal cliente
+        List<Ingredient> requiredIngredients = client.GetOrderIngredients();
+        Debug.Log($"📋 Ingredienti richiesti dal cliente:\n- {string.Join("\n- ", requiredIngredients)}");
+        List<Ingredient> required = client.GetOrderIngredients();
+        Debug.Log($"📝 Ingredienti richiesti:\n- {string.Join("\n- ", required)}");
+
+
+        // Controlla se tutti i richiesti sono presenti (indipendentemente dall'ordine)
+        bool correct = requiredIngredients.All(req => trayIngredients.Contains(req)) &&
+                       trayIngredients.Count == requiredIngredients.Count;
+
+        if (correct)
+        {
+            Debug.Log($"✅ Ordine corretto per {client.name}");
+            
+            client.CompleteOrder(); // 🚀 Fai andare via il cliente
+
+            Destroy(held.gameObject);
+            placeOnTrayScript.ClearCurrentTray();
+        }
+        else
+        {
+            Debug.Log($"❌ Ordine ERRATO per {client.name}");
         }
     }
 }

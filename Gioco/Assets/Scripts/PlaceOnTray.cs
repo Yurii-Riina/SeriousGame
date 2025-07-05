@@ -19,7 +19,6 @@ public class PlaceOnTray : MonoBehaviour
 
     [SerializeField] private List<StackOnTray> stackOnTrayList;
 
-    // Mappa tra nome stack point e oggetti associati
     private Dictionary<string, List<string>> stackOnTrayDict;
 
     private void Awake()
@@ -33,16 +32,9 @@ public class PlaceOnTray : MonoBehaviour
         if (pickUpAndPlaceScript == null)
             pickUpAndPlaceScript = GetComponent<PickUpAndPlace>();
 
-        // Costruzione del dizionario
         stackOnTrayDict = new Dictionary<string, List<string>>();
         foreach (var stack in stackOnTrayList)
         {
-            if (stack.placeableObject == null)
-            {
-                Debug.LogWarning($"[PlaceOnTray] Uno stack ha placeableObject nullo (stackPoint: {stack.stackPointOnTrayName})");
-                continue;
-            }
-
             string objectName = stack.placeableObject.name;
 
             if (!stackOnTrayDict.ContainsKey(stack.stackPointOnTrayName))
@@ -82,14 +74,12 @@ public class PlaceOnTray : MonoBehaviour
                     pickUpAndPlaceScript.SetHeldObject(rb, col);
                 }
 
-                // Trova il nome del punto di stack corrispondente
                 string matchingStackPoint = stackOnTrayDict
                     .FirstOrDefault(kvp => kvp.Value.Contains(heldName))
                     .Key;
 
                 if (!string.IsNullOrEmpty(matchingStackPoint))
                 {
-                    // Cerca lo stack point come figlio del Tray effettivamente cliccato
                     Transform stackPointTransform = currentTray.Find(matchingStackPoint);
 
                     if (stackPointTransform != null)
@@ -114,11 +104,9 @@ public class PlaceOnTray : MonoBehaviour
     public List<GameObject> GetObjectsOnTray(Transform tray)
     {
         List<GameObject> placedObjects = new List<GameObject>();
-
         if (tray == null) return placedObjects;
 
         AddChildrenRecursive(tray, placedObjects);
-
         return placedObjects;
     }
 
@@ -129,56 +117,140 @@ public class PlaceOnTray : MonoBehaviour
             if (child.name.ToLower().Contains("stackpoint")) continue;
 
             list.Add(child.gameObject);
-
-            // Ricorsione: controlla anche i figli del figlio
             AddChildrenRecursive(child, list);
         }
     }
 
-    public Ingredient IngredientFromGameObject(GameObject obj) //la usiamo perchè per controllare se l'ordine è giusto ci serve una lista di ingredienti non di gameobjects
+    public Ingredient? IngredientFromGameObject(GameObject obj)
     {
         string name = obj.name;
 
+        // Ignora contenitori
+        if (name.StartsWith("CartonHamburger") || name.StartsWith("CartonTop"))
+            return null;
+
+        // Ignora semini sul bun
+        if (name.Contains("Cube"))
+            return null;
+
+        // Ignora elementi decorativi dell'acqua
+        if (name.StartsWith("aqua_05_element"))
+            return null;
+
+        // Panino
         if (name == "BottomCookedBread") return Ingredient.BottomBun;
         if (name == "TopCookedBread") return Ingredient.TopBun;
         if (name == "CookedMeat") return Ingredient.Hamburger;
         if (name == "CookedBacon") return Ingredient.Bacon;
         if (name == "Cheese") return Ingredient.Cheese;
         if (name == "MeltedCheese") return Ingredient.Cheese;
-        if (name == "MeltedCheese_FInal(Clone)") return Ingredient.Cheese; //non riuscivamo a correggerlo via codice quindi abbiamo optato per questa soluzione
+        if (name == "MeltedCheese_FInal(Clone)") return Ingredient.Cheese;
         if (name == "Onion") return Ingredient.Onion;
         if (name == "Lettuce") return Ingredient.Lettuce;
         if (name == "Pickle") return Ingredient.Pickles;
         if (name == "Tomato") return Ingredient.Tomato;
+
+        // Bevande
         if (name == "CocaCola") return Ingredient.CocaCola;
         if (name == "Fanta") return Ingredient.Fanta;
         if (name == "Water") return Ingredient.Water;
-        if (name == "Donut") return Ingredient.Donut;
-        if (name == "CookedFriesPack") return Ingredient.Fries;
-        if (name == "CookedNuggetsPack 1") return Ingredient.Nuggets;
 
-        // Se non riconosciuto
-        throw new Exception($"Ingrediente non riconosciuto: {obj.name}");
+        // Dolci
+        if (name == "Donut") return Ingredient.Donut;
+
+        // Patatine e Nuggets
+        if (name.StartsWith("CookedFriesPack") || name.StartsWith("CartonFries"))
+            return Ingredient.Fries;
+        if (name.StartsWith("CookedNuggetsPack") || name.StartsWith("CartonNuggets"))
+            return Ingredient.Nuggets;
+
+        // Decorazioni Donut
+        if (name.StartsWith("Topping") || name.Contains("Sprinkle"))
+            return null;
+
+        Debug.LogWarning($"❗Ingrediente non riconosciuto: {obj.name}");
+        return null;
+    }
+
+    public Ingredient? IngredientFromGameObjectSafe(GameObject obj)
+    {
+        try
+        {
+            return IngredientFromGameObject(obj);
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     public List<Ingredient> ConvertObjectsToIngredients(List<GameObject> objects)
     {
-        List<Ingredient> ingredients = new List<Ingredient>();
+        var ingredients = new List<Ingredient>();
 
         foreach (var obj in objects)
         {
-            try
+            Ingredient? ingr = IngredientFromGameObjectSafe(obj);
+
+            if (ingr.HasValue)
             {
-                Ingredient ingr = IngredientFromGameObject(obj);
-                ingredients.Add(ingr);
+                // Se è un pack riconosciuto (patatine, nuggets) o un bun, NON processare i figli
+                if (
+                    obj.name.StartsWith("CookedFriesPack")
+                    || obj.name.StartsWith("CookedNuggetsPack")
+                    || obj.name == "TopCookedBread"
+                    || obj.name == "BottomCookedBread"
+                )
+                {
+                    ingredients.Add(ingr.Value);
+                    continue; // SALTA i figli
+                }
+
+                // Aggiunge l'ingrediente riconosciuto
+                ingredients.Add(ingr.Value);
             }
-            catch (Exception e)
-            {
-                Debug.LogWarning(e.Message);
-            }
+
+            // Se non era un contenitore, controlla ricorsivamente i figli
+            ingredients.AddRange(GetIngredientsFromChildren(obj.transform));
         }
 
         return ingredients;
     }
 
+    public List<Ingredient> GetIngredientsFromChildren(Transform parent)
+    {
+        var list = new List<Ingredient>();
+
+        foreach (Transform child in parent)
+        {
+            if (child.name.ToLower().Contains("stackpoint"))
+                continue;
+
+            if (child.name.ToLower().Contains("topping") || child.name.ToLower().Contains("sprinkle"))
+                continue;
+
+            Ingredient? ingr = IngredientFromGameObjectSafe(child.gameObject);
+            if (ingr.HasValue)
+            {
+                list.Add(ingr.Value);
+
+                // Se è un pack, NON scendere nei figli
+                if (ingr.Value == Ingredient.Fries || ingr.Value == Ingredient.Nuggets)
+                    continue;
+            }
+
+            // Ricorsione nei figli
+            list.AddRange(GetIngredientsFromChildren(child));
+        }
+
+        return list;
+    }
+
+    /// <summary>
+    /// Rimuove il riferimento al vassoio attualmente selezionato.
+    /// </summary>
+    public void ClearCurrentTray()
+    {
+        currentTray = null;
+    }
 }

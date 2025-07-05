@@ -48,7 +48,7 @@ public class Order
         {
             newOrder.Ingredients.Add(Ingredient.Donut);
         }
-            Debug.Log("Client expects: " + string.Join(", ", newOrder.Ingredients.Select(i => i.ToString())));
+        Debug.Log("Client expects: " + string.Join(", ", newOrder.Ingredients.Select(i => i.ToString())));
         return newOrder;
     }
 
@@ -84,43 +84,74 @@ public class Order
     /// </summary>
     public bool Matches(List<Ingredient> delivered)
     {
-        var expected = new List<Ingredient>(Ingredients);
-        var provided = new List<Ingredient>(delivered);
+        if (Ingredients == null || Ingredients.Count == 0)
+            return delivered == null || delivered.Count == 0;
 
-        // Find burger indices in delivered
-        int start = provided.IndexOf(Ingredient.BottomBun);
-        int end = provided.LastIndexOf(Ingredient.TopBun);
+        // Se è un ordine senza burger
+        bool hasBurger = Ingredients.Contains(Ingredient.BottomBun) && Ingredients.Contains(Ingredient.TopBun);
 
-        if (start == -1 || end == -1 || end <= start)
-            return false;
-
-        var burgerContents = provided.GetRange(start, end - start + 1);
-
-        var expectedBurger = expected.FindAll(i =>
-            i == Ingredient.BottomBun || i == Ingredient.TopBun ||
-            i == Ingredient.Hamburger || i == Ingredient.Bacon ||
-            i == Ingredient.Cheese || i == Ingredient.Onion ||
-            i == Ingredient.Lettuce || i == Ingredient.Pickles ||
-            i == Ingredient.Tomato);
-
-        foreach (var item in burgerContents)
+        if (hasBurger)
         {
-            if (!expectedBurger.Remove(item))
+            // Verifica che ci sia il burger intero
+            int start = delivered.IndexOf(Ingredient.BottomBun);
+            int end = delivered.LastIndexOf(Ingredient.TopBun);
+
+            if (start == -1 || end == -1 || end <= start)
                 return false;
+
+            var burgerContents = delivered.GetRange(start, end - start + 1);
+            var expectedBurger = Ingredients.Where(i =>
+                i == Ingredient.BottomBun || i == Ingredient.TopBun ||
+                i == Ingredient.Hamburger || i == Ingredient.Bacon ||
+                i == Ingredient.Cheese || i == Ingredient.Onion ||
+                i == Ingredient.Lettuce || i == Ingredient.Pickles ||
+                i == Ingredient.Tomato
+            ).ToList();
+
+            // Confronta contenuto del burger in modo rigoroso (quantità e tipo)
+            if (!SameContents(expectedBurger, burgerContents))
+                return false;
+
+            // Confronta il resto degli ingredienti fuori dal burger
+            var expectedOutside = Ingredients.Except(expectedBurger).ToList();
+            var deliveredOutside = new List<Ingredient>(delivered);
+            deliveredOutside.RemoveRange(start, end - start + 1);
+
+            if (!SameContents(expectedOutside, deliveredOutside))
+                return false;
+
+            return true;
         }
-        if (expectedBurger.Count > 0)
+        else
+        {
+            // Nessun burger: confronta tutto come "altri ingredienti"
+            return SameContents(Ingredients, delivered);
+        }
+    }
+
+    /// <summary>
+    /// Verifica che due liste abbiano esattamente gli stessi ingredienti e quantità.
+    /// </summary>
+    private bool SameContents(List<Ingredient> expected, List<Ingredient> actual)
+    {
+        var expectedCounts = expected.GroupBy(i => i).ToDictionary(g => g.Key, g => g.Count());
+        var actualCounts = actual.GroupBy(i => i).ToDictionary(g => g.Key, g => g.Count());
+
+        if (expectedCounts.Count != actualCounts.Count)
             return false;
 
-        var otherExpected = expected.Except(burgerContents).ToList();
-        var otherProvided = provided.Except(burgerContents).ToList();
-
-        // Tolleranza per extra: basta che ciò che è richiesto sia presente
-        foreach (var item in otherExpected)
+        foreach (var kvp in expectedCounts)
         {
-            if (!otherProvided.Remove(item))
+            if (!actualCounts.TryGetValue(kvp.Key, out int count) || count != kvp.Value)
                 return false;
         }
 
         return true;
+    }
+    
+    public string GetReadableDescription()
+    {
+        if (Ingredients == null || Ingredients.Count == 0) return "(Vuoto)";
+        return string.Join(", ", Ingredients);
     }
 }

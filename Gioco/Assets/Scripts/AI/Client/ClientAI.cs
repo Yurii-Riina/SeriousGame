@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class ClientAI : MonoBehaviour
@@ -22,7 +23,6 @@ public class ClientAI : MonoBehaviour
     private float movingTimer = 0f;
     private const float movingTimeout = 15f;
     private float leavingTimer = 0f;
-    private const float leavingTimeout = 10f;
 
     public ClientState state;
     public Order currentOrder { get; private set; }
@@ -46,11 +46,6 @@ public class ClientAI : MonoBehaviour
 
     private void Update()
     {
-        if (orderPoints == null || assignedOrderPoint < 0 || assignedOrderPoint >= orderPoints.Length)
-        {
-            return;
-        }
-
         switch (state)
         {
             case ClientState.MovingToOrder:
@@ -62,16 +57,18 @@ public class ClientAI : MonoBehaviour
             case ClientState.Leaving:
                 HandleLeaving();
                 break;
-        }
-
-        if (state == ClientState.Ordering && !orderShown)
-        {
-            float dist = Vector3.Distance(transform.position, orderPoints[assignedOrderPoint].position);
-            if (dist <= 2.0f)
-            {
-                EventManager.ClientHasStartedOrdering(this);
-                orderShown = true;
-            }
+            case ClientState.Ordering:
+                if (!orderShown)
+                {
+                    float dist = Vector3.Distance(transform.position, orderPoints[assignedOrderPoint].position);
+                    if (dist <= 2f)
+                    {
+                        EventManager.ClientHasStartedOrdering(this);
+                        Debug.Log($"🟢 Client {name} started ordering.");
+                        orderShown = true;
+                    }
+                }
+                break;
         }
     }
 
@@ -81,6 +78,7 @@ public class ClientAI : MonoBehaviour
             Vector3.Distance(transform.position, agent.destination) < 0.2f &&
             !agent.pathPending)
         {
+            Debug.Log($"🟢 Client {name} reached order point.");
             state = ClientState.Ordering;
             waitTimer = 0f;
         }
@@ -106,9 +104,9 @@ public class ClientAI : MonoBehaviour
     private void HandleLeaving()
     {
         leavingTimer += Time.deltaTime;
-
-        if ((!agent.pathPending && agent.remainingDistance <= despawnDistanceThreshold) || leavingTimer > leavingTimeout)
+        if ((!agent.pathPending && agent.remainingDistance <= despawnDistanceThreshold) || leavingTimer > 10f)
         {
+            Debug.Log($"🟢 Client {name} despawned.");
             Destroy(gameObject);
         }
     }
@@ -138,14 +136,22 @@ public class ClientAI : MonoBehaviour
         if (state == ClientState.Leaving) return;
 
         currentOrder = Order.GenerateRandomOrder();
+        Debug.Log($"🟢 Client {name} started ordering: {currentOrder.GetReadableDescription()}");
         state = ClientState.Ordering;
         isOrderingNow = true;
     }
 
-    public bool TryDeliverOrder(System.Collections.Generic.List<Ingredient> delivered)
+    public bool TryDeliverOrder(List<Ingredient> delivered)
     {
+        Debug.Log($"🔹 Client {name} TryDeliverOrder invoked.");
         if (currentOrder == null || !isOrderingNow)
+        {
+            Debug.Log("🔴 Cannot deliver: either no order or not ordering.");
             return false;
+        }
+
+        Debug.Log($"📦 Delivered ingredients: {string.Join(", ", delivered)}");
+        Debug.Log($"📋 Required ingredients: {currentOrder.GetReadableDescription()}");
 
         if (currentOrder.Matches(delivered))
         {
@@ -154,20 +160,39 @@ public class ClientAI : MonoBehaviour
         }
         else
         {
+            Debug.Log("❌ Delivered items do not match the order.");
             return false;
         }
     }
 
     public void CompleteOrder()
     {
-        if (!isOrderingNow) return;
+        Debug.Log("✅ CompleteOrder called.");
+
+        if (!isOrderingNow)
+        {
+            Debug.Log("⚠️ CompleteOrder ignored: isOrderingNow is false.");
+            return;
+        }
 
         isOrderingNow = false;
         currentOrder = null;
         ClientQueue.Instance.ReleasePoint(assignedOrderPoint);
         EventManager.ClientWasServed(this);
+
+        Debug.Log($"🚶 Client {name} is leaving towards {endRoute.position}");
         state = ClientState.Leaving;
-        agent.SetDestination(endRoute.position);
+
+        if (agent.isOnNavMesh)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(endRoute.position);
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ Client NavMeshAgent is not on NavMesh!");
+        }
+
         leavingTimer = 0f;
     }
 
@@ -176,6 +201,7 @@ public class ClientAI : MonoBehaviour
         currentOrder = null;
         ClientQueue.Instance.ReleasePoint(assignedOrderPoint);
         EventManager.ClientGotAngry(this);
+        Debug.Log("😡 Client left angry!");
         state = ClientState.Leaving;
         agent.SetDestination(endRoute.position);
         leavingTimer = 0f;
@@ -186,7 +212,16 @@ public class ClientAI : MonoBehaviour
     public string GetOrderDescription()
     {
         if (currentOrder == null) return "(Nessun ordine)";
-        string burger = currentOrder.SelectedBurger.HasValue ? $"[{currentOrder.SelectedBurger}] " : "";
-        return burger + string.Join(", ", currentOrder.Ingredients);
+        return currentOrder.GetReadableDescription();
+    }
+
+    /// <summary>
+    /// Restituisce una lista degli ingredienti dell'ordine corrente, oppure una lista vuota.
+    /// </summary>
+    public List<Ingredient> GetOrderIngredients()
+    {
+        if (currentOrder != null)
+            return currentOrder.Ingredients;
+        return new List<Ingredient>();
     }
 }
