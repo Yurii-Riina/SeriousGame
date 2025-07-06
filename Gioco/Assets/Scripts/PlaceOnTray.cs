@@ -67,12 +67,6 @@ public class PlaceOnTray : MonoBehaviour
                 GameObject heldObject = hand.GetChild(0).gameObject;
                 string heldName = heldObject.name;
 
-                // Rimuove eventuali suffissi "(Clone)" e numeri finali
-                if (heldName.Contains("("))
-                    heldName = heldName.Substring(0, heldName.IndexOf("(")).Trim();
-                Debug.Log($"[PlaceOnTray] Nome normalizzato oggetto in mano: {heldName}");
-
-
                 Rigidbody rb = heldObject.GetComponent<Rigidbody>();
                 Collider col = heldObject.GetComponent<Collider>();
                 if (rb != null && col != null)

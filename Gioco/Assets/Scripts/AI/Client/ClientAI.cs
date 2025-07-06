@@ -9,7 +9,7 @@ public class ClientAI : MonoBehaviour
     public Transform[] orderPoints;
     public Transform endRoute;
 
-    public float maxWaitTime = 240f;
+    public float maxWaitTime = 120f;
     public float moveSpeed = 3.5f;
     public float despawnDistanceThreshold = 1.5f;
 
@@ -18,7 +18,7 @@ public class ClientAI : MonoBehaviour
     private NavMeshAgent agent;
     private float waitTimer = 0f;
     private bool isOrderingNow = false;
-    //private bool orderShown = false;
+    private bool orderShown = false;
 
     private float movingTimer = 0f;
     private const float movingTimeout = 15f;
@@ -26,11 +26,6 @@ public class ClientAI : MonoBehaviour
 
     public ClientState state;
     public Order currentOrder { get; private set; }
-    public bool IsOrderingNow
-    {
-        get => isOrderingNow;
-        set => isOrderingNow = value;
-    }
 
     private void Awake()
     {
@@ -62,19 +57,19 @@ public class ClientAI : MonoBehaviour
             case ClientState.Leaving:
                 HandleLeaving();
                 break;
-            //case ClientState.Ordering:
-            //    if (!orderShown)
-            //    {
-            //        float dist = Vector3.Distance(transform.position, orderPoints[assignedOrderPoint].position);
-            //        if (dist <= 2f)
-            //        {
-            //            EventManager.ClientHasStartedOrdering(this);
-            //            Debug.Log($"🟢 Client {name} started ordering.");
-            //            orderShown = true;
-            //        }
-            //    }
-            //    break;
-        }   
+            case ClientState.Ordering:
+                if (!orderShown)
+                {
+                    float dist = Vector3.Distance(transform.position, orderPoints[assignedOrderPoint].position);
+                    if (dist <= 2f)
+                    {
+                        EventManager.ClientHasStartedOrdering(this);
+                        Debug.Log($"🟢 Client {name} started ordering.");
+                        orderShown = true;
+                    }
+                }
+                break;
+        }
     }
 
     private void HandleMovingToOrder()
@@ -84,8 +79,8 @@ public class ClientAI : MonoBehaviour
             !agent.pathPending)
         {
             Debug.Log($"🟢 Client {name} reached order point.");
-
-            StartOrdering();
+            state = ClientState.Ordering;
+            waitTimer = 0f;
         }
     }
 
@@ -102,6 +97,7 @@ public class ClientAI : MonoBehaviour
             if (waitTimer >= maxWaitTime)
             {
                 GoAngry();
+                Debug.LogError($"🔴 Client {name} waited too long and left angry.");
             }
         }
     }
@@ -140,23 +136,10 @@ public class ClientAI : MonoBehaviour
     {
         if (state == ClientState.Leaving) return;
 
+        currentOrder = Order.GenerateRandomOrder();
         Debug.Log($"🟢 Client {name} started ordering: {currentOrder.GetReadableDescription()}");
-
-        if (OrderManager.Instance.HasAvailableSlot())
-        {
-            OrderManager.Instance.AddWaitingClient(this);
-            isOrderingNow = true;
-        }
-        else
-        {
-            OrderManager.Instance.waitingQueue.Add(this);
-            isOrderingNow = false;
-            Debug.Log($"🟡 Client {name} messo in coda in attesa di slot libero.");
-        }
-
         state = ClientState.Ordering;
-
-        EventManager.ClientHasStartedOrdering(this);
+        isOrderingNow = true;
     }
 
     public bool TryDeliverOrder(List<Ingredient> delivered)
@@ -241,14 +224,5 @@ public class ClientAI : MonoBehaviour
         if (currentOrder != null)
             return currentOrder.Ingredients;
         return new List<Ingredient>();
-    }
-
-    public void InitializeOrder()
-    {
-        if (currentOrder == null)
-        {
-            currentOrder = Order.GenerateRandomOrder();
-            Debug.Log($"🟢 Client {name} inizializza ordine: {currentOrder.GetReadableDescription()}");
-        }
     }
 }

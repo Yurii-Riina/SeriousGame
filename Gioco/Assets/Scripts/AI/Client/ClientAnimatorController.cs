@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿/*using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
@@ -26,3 +26,4 @@ public class ClientAnimatorController : MonoBehaviour
         animator.SetFloat("Speed", speed, 0.1f, Time.deltaTime);
     }
 }
+*/

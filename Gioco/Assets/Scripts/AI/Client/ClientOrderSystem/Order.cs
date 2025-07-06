@@ -30,7 +30,7 @@ public class Order
         }
 
         // Add drink
-        if (Random.value < 0.9f)
+        if (Random.value < 1.0f)
             newOrder.Ingredients.Add((Ingredient)Random.Range((int)Ingredient.Water, (int)Ingredient.Fanta + 1));
 
         // Add side
