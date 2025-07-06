@@ -33,7 +33,7 @@ public class FryerPackagingSpawner : MonoBehaviour
 
                 if (cookedMarker == null)
                 {
-                    Debug.LogError("ERRORE: Nessun CookedMarker trovato sull'oggetto colpito.");
+                    Debug.Log("ERRORE: Nessun CookedMarker trovato sull'oggetto colpito.");
                     return;
                 }
 
@@ -41,7 +41,7 @@ public class FryerPackagingSpawner : MonoBehaviour
                 Grillable grillable = cookedMarker.GetComponent<Grillable>();
                 if (grillable == null)
                 {
-                    Debug.LogError("ERRORE: L'oggetto colpito ha CookedMarker ma non Grillable.");
+                    Debug.Log("ERRORE: L'oggetto colpito ha CookedMarker ma non Grillable.");
                     return;
                 }
 
