@@ -153,7 +153,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   endRoute: {fileID: 0}
-  maxWaitTime: 90
+  maxWaitTime: 180
   maxOrderingTime: 90
   moveSpeed: 5
   despawnDistanceThreshold: 1.5
