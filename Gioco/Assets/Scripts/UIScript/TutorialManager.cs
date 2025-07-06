@@ -16,9 +16,9 @@ public class TutorialManager : MonoBehaviour
     [Header("Scripts")]
     [SerializeField] private PickUpAndPlace pickUpAndPlace;
     [SerializeField] private PlaceOnTray placeOnTrayScript;
-    [SerializeField] private GrillCookingManager grillCookingManager;
+    [SerializeField] private GrillCookingManager[] grillManagers; //usiamo un array così funziona per qualsiasi griglia
     [SerializeField] private ToasterManager toasterManager;
-    [SerializeField] private FryerBasketMover fryerBasketMover;
+    [SerializeField] private FryerBasketMover[] fryerBasketMovers;
     [SerializeField] private FryerPackagingSpawner fryerPackagingSpawner;
 
     private Coroutine tutorialCoroutine;
@@ -50,7 +50,7 @@ public class TutorialManager : MonoBehaviour
             Debug.LogError("PlaceOnTray script is not assigned in the inspector.");
         }
 
-        if (grillCookingManager == null)
+        if (grillManagers == null)
         {
             Debug.LogError("GrillCookingManager script is not assigned in the inspector.");
         }
@@ -60,7 +60,7 @@ public class TutorialManager : MonoBehaviour
             Debug.LogError("ToasterManager script is not assigned in the inspector.");
         }
 
-        if (fryerBasketMover == null)
+        if (fryerBasketMovers == null)
         {
             Debug.LogError("FryerBasketMover script is not assigned in the inspector.");
         }
@@ -129,16 +129,16 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitForSeconds(toasterManager.cookingTime);
 
         //prendere il pane cotto
-        tutorialText.text = "Pick the cooked bread by left-clicking on it.";
+        tutorialText.text = "Pick the cooked bread by left-clicking on it and place it in the carton burger.";
         yield return new WaitUntil(() => hand.childCount > 0 && (hand.GetChild(0).name == "TopCookedBread" || hand.GetChild(0).name == "BottomCookedBread"));
 
         //cottura carne
         tutorialText.text = "Move the grill up and down by pressing 'R' and place the meat on it by pressing 'C' to start cooking it.";
-        yield return new WaitUntil(() => grillCookingManager.IsCooking.Any(c => c)); //questa funzione del linq controlla se almeno un elemento dell'array isCooking è true
+        yield return new WaitUntil(() => grillManagers.Any(manager => manager.IsCooking.Any(c => c))); //questa funzione del linq controlla se almeno un elemento dell'array isCooking è true
 
         //attesa cottura
         tutorialText.text = "Wait for the meat to cook.";
-        yield return new WaitForSeconds(grillCookingManager.CookingTime);
+        yield return new WaitForSeconds(grillManagers[0].CookingTime);
 
         //metti carne cotta nella vaschetta
         tutorialText.text = "Place the cooked meat in the container by pressing 'Q' on the grill and press 'F' on the container to pick it up.";
@@ -154,11 +154,11 @@ public class TutorialManager : MonoBehaviour
 
         //frittura patatine
         tutorialText.text = "Now let's fry! Move the fryer basket up and down by pressing 'R' and place the fries in it by pressing 'C'";
-        yield return new WaitUntil(() => fryerBasketMover.IsCooking);
+        yield return new WaitUntil(() => fryerBasketMovers.Any(f => f.IsCooking));
 
         //attesa cottura patatine
         tutorialText.text = "Wait for the fries to cook.";
-        yield return new WaitForSeconds(fryerBasketMover.cookingTime);
+        yield return new WaitForSeconds(fryerBasketMovers[0].cookingTime);
 
         //prendere le patatine
         tutorialText.text = "Put the fries in their spot by pressing 'Q' on them and then press 'E' to pack them.";

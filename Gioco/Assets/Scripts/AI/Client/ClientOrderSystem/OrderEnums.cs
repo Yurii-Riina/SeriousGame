@@ -16,7 +16,6 @@ public enum Ingredient
     Cheese,
     Onion,
     Lettuce,
-    Pickles,
     Tomato
 }
 

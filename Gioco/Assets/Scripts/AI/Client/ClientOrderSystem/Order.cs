@@ -64,15 +64,15 @@ public class Order
             case BurgerType.SpecialBurger:
                 return new List<Ingredient> {
                     Ingredient.Hamburger, Ingredient.Bacon, Ingredient.Cheese,
-                    Ingredient.Onion, Ingredient.Lettuce, Ingredient.Pickles, Ingredient.Tomato };
+                    Ingredient.Onion, Ingredient.Lettuce, Ingredient.Tomato };
             case BurgerType.Veggie:
                 return new List<Ingredient> {
-                    Ingredient.Onion, Ingredient.Lettuce, Ingredient.Pickles, Ingredient.Tomato };
+                    Ingredient.Onion, Ingredient.Lettuce, Ingredient.Tomato };
             case BurgerType.BabyBurger:
                 return new List<Ingredient> { Ingredient.Hamburger, Ingredient.Bacon };
             case BurgerType.Nameless:
                 return new List<Ingredient> {
-                    Ingredient.Hamburger, Ingredient.Onion, Ingredient.Pickles, Ingredient.Cheese };
+                    Ingredient.Hamburger, Ingredient.Onion, Ingredient.Cheese };
             default:
                 return new List<Ingredient>();
         }
@@ -104,8 +104,7 @@ public class Order
                 i == Ingredient.BottomBun || i == Ingredient.TopBun ||
                 i == Ingredient.Hamburger || i == Ingredient.Bacon ||
                 i == Ingredient.Cheese || i == Ingredient.Onion ||
-                i == Ingredient.Lettuce || i == Ingredient.Pickles ||
-                i == Ingredient.Tomato
+                i == Ingredient.Lettuce || i == Ingredient.Tomato
             ).ToList();
 
             // Confronta contenuto del burger in modo rigoroso (quantità e tipo)

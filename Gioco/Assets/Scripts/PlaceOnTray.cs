@@ -153,7 +153,6 @@ public class PlaceOnTray : MonoBehaviour
         if (name == "MeltedCheese_FInal(Clone)") return Ingredient.Cheese;
         if (name == "Onion") return Ingredient.Onion;
         if (name == "Lettuce") return Ingredient.Lettuce;
-        if (name == "Pickle") return Ingredient.Pickles;
         if (name == "Tomato") return Ingredient.Tomato;
 
         // Bevande
