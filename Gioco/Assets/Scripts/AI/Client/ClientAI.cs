@@ -21,8 +21,8 @@ public class ClientAI : MonoBehaviour
     public Transform endRoute;
 
     /// <summary>Tempo massimo di attesa per essere servito.</summary>
-    public float maxWaitTime = 180f;
-    public float maxOrderingTime = 90f;
+    public float maxWaitTime = 300f;
+    public float maxOrderingTime = 150f;
     public float moveSpeed = 3.5f;
     public float despawnDistanceThreshold = 1.5f;
 
