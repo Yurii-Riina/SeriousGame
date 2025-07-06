@@ -153,8 +153,10 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   endRoute: {fileID: 0}
-  maxWaitTime: 10
+  maxWaitTime: 90
+  maxOrderingTime: 90
   moveSpeed: 5
   despawnDistanceThreshold: 1.5
   assignedOrderPoint: -1
   state: 0
+  xManager: {fileID: 0}

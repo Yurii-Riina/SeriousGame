@@ -7,7 +7,7 @@ public class PlayerControllerWithMouse : MonoBehaviour
     [SerializeField][Range(0.0f, 0.5f)] private float mouseSmoothTime = 0.03f;
     [SerializeField] private bool cursorLock = true;
     [SerializeField] private float mouseSensivity = 3.5f;
-    [SerializeField] private float speed = 4.0f;
+    [SerializeField] private float speed = 10.0f;
     [SerializeField] private float fallingSpeed = -5f;
 
     private Transform myTransform;

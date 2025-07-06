@@ -8,7 +8,6 @@ public class DeliverOrder : MonoBehaviour
     [SerializeField] private Transform hand;
     [SerializeField] private PickUpAndPlace pickUpAndPlaceScript;
     [SerializeField] private PlaceOnTray placeOnTrayScript;
-    [SerializeField] private XManager xManager;
 
     void Awake()
     {
@@ -23,9 +22,6 @@ public class DeliverOrder : MonoBehaviour
 
         if (placeOnTrayScript == null)
             placeOnTrayScript = GetComponent<PlaceOnTray>();
-
-        if (xManager == null)
-            xManager = FindFirstObjectByType<XManager>();
     }
 
     void Update()
@@ -99,7 +95,6 @@ public class DeliverOrder : MonoBehaviour
         else
         {
             client.GoAngry(); // 😡 Fai arrabbiare il client
-            xManager?.TurnNextXRed(); // 🔴 Segna un errore
             
             Destroy(held.gameObject);
             placeOnTrayScript.ClearCurrentTray();

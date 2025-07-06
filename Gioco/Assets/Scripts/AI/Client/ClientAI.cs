@@ -1,47 +1,56 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class ClientAI : MonoBehaviour
 {
+    #region Public Fields
+
     public Transform spawnPoint;
     public Transform[] orderPoints;
     public Transform endRoute;
 
-    public float maxWaitTime = 120f;
+    public float maxWaitTime = 90f;
+    public float maxOrderingTime = 90f;
     public float moveSpeed = 3.5f;
     public float despawnDistanceThreshold = 1.5f;
 
     [HideInInspector] public int assignedOrderPoint = -1;
+    public ClientState state;
+    public Order currentOrder { get; private set; }
+
+    #endregion
+
+    #region Private Fields
 
     private NavMeshAgent agent;
+    private Coroutine orderingTimeoutCoroutine;
+    [SerializeField] private XManager xManager;
+
     private float waitTimer = 0f;
+    private float leavingTimer = 0f;
+
     private bool isOrderingNow = false;
     private bool orderShown = false;
 
-    private float movingTimer = 0f;
-    private const float movingTimeout = 15f;
-    private float leavingTimer = 0f;
+    #endregion
 
-    public ClientState state;
-    public Order currentOrder { get; private set; }
+    #region Unity Events
 
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         agent.speed = moveSpeed;
 
-        if (spawnPoint != null)
-        {
-            NavMeshHit hit;
-            if (NavMesh.SamplePosition(spawnPoint.position, out hit, 2f, NavMesh.AllAreas))
-            {
-                agent.Warp(hit.position);
-            }
-        }
+        if (spawnPoint != null && NavMesh.SamplePosition(spawnPoint.position, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+            agent.Warp(hit.position);
 
         ClientQueue.Instance.JoinQueue(this);
+
+        if (xManager == null)
+            xManager = FindFirstObjectByType<XManager>();
     }
 
     private void Update()
@@ -51,32 +60,28 @@ public class ClientAI : MonoBehaviour
             case ClientState.MovingToOrder:
                 HandleMovingToOrder();
                 break;
+
             case ClientState.WaitingInQueue:
                 HandleWaitingInQueue();
                 break;
+
             case ClientState.Leaving:
                 HandleLeaving();
                 break;
+
             case ClientState.Ordering:
-                if (!orderShown)
-                {
-                    float dist = Vector3.Distance(transform.position, orderPoints[assignedOrderPoint].position);
-                    if (dist <= 2f)
-                    {
-                        EventManager.ClientHasStartedOrdering(this);
-                        Debug.Log($"🟢 Client {name} started ordering.");
-                        orderShown = true;
-                    }
-                }
+                HandleOrdering();
                 break;
         }
     }
 
+    #endregion
+
+    #region State Handlers
+
     private void HandleMovingToOrder()
     {
-        if (assignedOrderPoint >= 0 &&
-            Vector3.Distance(transform.position, agent.destination) < 0.2f &&
-            !agent.pathPending)
+        if (assignedOrderPoint >= 0 && !agent.pathPending && agent.remainingDistance < 0.2f)
         {
             Debug.Log($"🟢 Client {name} reached order point.");
             state = ClientState.Ordering;
@@ -89,22 +94,18 @@ public class ClientAI : MonoBehaviour
         if (!agent.pathPending && agent.remainingDistance < 0.2f)
         {
             if (!isOrderingNow)
-            {
                 StartOrdering();
-            }
 
             waitTimer += Time.deltaTime;
             if (waitTimer >= maxWaitTime)
-            {
                 GoAngry();
-                Debug.LogError($"🔴 Client {name} waited too long and left angry.");
-            }
         }
     }
 
     private void HandleLeaving()
     {
         leavingTimer += Time.deltaTime;
+
         if ((!agent.pathPending && agent.remainingDistance <= despawnDistanceThreshold) || leavingTimer > 10f)
         {
             Debug.Log($"🟢 Client {name} despawned.");
@@ -112,24 +113,34 @@ public class ClientAI : MonoBehaviour
         }
     }
 
+    private void HandleOrdering()
+    {
+        if (orderShown) return;
+
+        float dist = Vector3.Distance(transform.position, orderPoints[assignedOrderPoint].position);
+        if (dist <= 2f)
+        {
+            EventManager.ClientHasStartedOrdering(this);
+            Debug.Log($"🟢 Client {name} started ordering.");
+            orderShown = true;
+
+            StartOrderingTimer();
+        }
+    }
+
+    #endregion
+
+    #region Public Methods
+
     public void AssignOrderPoint(int index, Vector3 queuePosition)
     {
         assignedOrderPoint = index;
 
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(queuePosition, out hit, 2f, NavMesh.AllAreas))
-        {
+        if (NavMesh.SamplePosition(queuePosition, out NavMeshHit hit, 2f, NavMesh.AllAreas))
             StartCoroutine(SetDestinationNextFrame(hit.position));
-        }
 
         state = ClientState.MovingToOrder;
-        movingTimer = waitTimer = leavingTimer = 0f;
-    }
-
-    private System.Collections.IEnumerator SetDestinationNextFrame(Vector3 pos)
-    {
-        yield return null;
-        agent.SetDestination(pos);
+        ResetTimers();
     }
 
     public void StartOrdering()
@@ -137,51 +148,87 @@ public class ClientAI : MonoBehaviour
         if (state == ClientState.Leaving) return;
 
         currentOrder = Order.GenerateRandomOrder();
-        Debug.Log($"🟢 Client {name} started ordering: {currentOrder.GetReadableDescription()}");
+        Debug.Log($"🟢 Client {name} created order: {currentOrder.GetReadableDescription()}");
+
         state = ClientState.Ordering;
         isOrderingNow = true;
     }
 
     public bool TryDeliverOrder(List<Ingredient> delivered)
     {
-        Debug.Log($"🔹 Client {name} TryDeliverOrder invoked.");
         if (currentOrder == null || !isOrderingNow)
         {
             Debug.Log("🔴 Cannot deliver: either no order or not ordering.");
             return false;
         }
 
-        Debug.Log($"📦 Delivered ingredients: {string.Join(", ", delivered)}");
-        Debug.Log($"📋 Required ingredients: {currentOrder.GetReadableDescription()}");
+        Debug.Log($"📦 Delivered: {string.Join(", ", delivered)}");
+        Debug.Log($"📋 Expected: {currentOrder.GetReadableDescription()}");
 
         if (currentOrder.Matches(delivered))
         {
             CompleteOrder();
             return true;
         }
-        else
-        {
-            Debug.Log("❌ Delivered items do not match the order.");
-            return false;
-        }
+
+        Debug.Log("❌ Wrong delivery.");
+        return false;
     }
 
     public void CompleteOrder()
     {
-        Debug.Log("✅ CompleteOrder called.");
-
         if (!isOrderingNow)
         {
-            Debug.Log("⚠️ CompleteOrder ignored: isOrderingNow is false.");
+            Debug.Log("⚠️ Cannot complete: not ordering.");
             return;
         }
 
+        Debug.Log("✅ Order completed.");
+
         isOrderingNow = false;
         currentOrder = null;
+
+        StopOrderingTimer();
+
         ClientQueue.Instance.ReleasePoint(assignedOrderPoint);
         EventManager.ClientWasServed(this);
 
-        Debug.Log($"🚶 Client {name} is leaving towards {endRoute.position}");
+        MoveToEndRoute();
+    }
+
+    public void GoAngry()
+    {
+        Debug.Log("😡 Client left angry.");
+
+        currentOrder = null;
+        StopOrderingTimer();
+
+        ClientQueue.Instance.ReleasePoint(assignedOrderPoint);
+        EventManager.ClientGotAngry(this);
+
+        xManager?.TurnNextXRed(); // 🔴 Segna un errore
+        MoveToEndRoute();
+    }
+
+    public bool IsOrdering() => state == ClientState.Ordering && isOrderingNow;
+
+    public string GetOrderDescription() => currentOrder?.GetReadableDescription() ?? "(Nessun ordine)";
+    public List<Ingredient> GetOrderIngredients() => currentOrder?.Ingredients ?? new List<Ingredient>();
+
+    #endregion
+
+    #region Private Helpers
+
+    private void ResetTimers()
+    {
+        waitTimer = 0f;
+        leavingTimer = 0f;
+        orderShown = false;
+        isOrderingNow = false;
+    }
+
+    private void MoveToEndRoute()
+    {
         state = ClientState.Leaving;
 
         if (agent.isOnNavMesh)
@@ -191,38 +238,48 @@ public class ClientAI : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("⚠️ Client NavMeshAgent is not on NavMesh!");
+            Debug.LogWarning("⚠️ Agent is not on NavMesh.");
         }
 
         leavingTimer = 0f;
     }
 
-    public void GoAngry()
+    private void StartOrderingTimer()
     {
-        currentOrder = null;
-        ClientQueue.Instance.ReleasePoint(assignedOrderPoint);
-        EventManager.ClientGotAngry(this);
-        Debug.Log("😡 Client left angry!");
-        state = ClientState.Leaving;
-        agent.SetDestination(endRoute.position);
-        leavingTimer = 0f;
+        if (orderingTimeoutCoroutine != null) return;
+        orderingTimeoutCoroutine = StartCoroutine(OrderingTimeoutCoroutine());
     }
 
-    public bool IsOrdering() => state == ClientState.Ordering && isOrderingNow;
-
-    public string GetOrderDescription()
+    private void StopOrderingTimer()
     {
-        if (currentOrder == null) return "(Nessun ordine)";
-        return currentOrder.GetReadableDescription();
+        if (orderingTimeoutCoroutine != null)
+        {
+            StopCoroutine(orderingTimeoutCoroutine);
+            orderingTimeoutCoroutine = null;
+        }
     }
 
-    /// <summary>
-    /// Restituisce una lista degli ingredienti dell'ordine corrente, oppure una lista vuota.
-    /// </summary>
-    public List<Ingredient> GetOrderIngredients()
+    private IEnumerator SetDestinationNextFrame(Vector3 pos)
     {
-        if (currentOrder != null)
-            return currentOrder.Ingredients;
-        return new List<Ingredient>();
+        yield return null;
+        agent.SetDestination(pos);
     }
+
+    private IEnumerator OrderingTimeoutCoroutine()
+    {
+        float timer = 0f;
+        while (timer < maxOrderingTime)
+        {
+            if (!isOrderingNow || state != ClientState.Ordering)
+                yield break;
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        Debug.Log($"⏰ Client {name} ordering time expired.");
+        GoAngry();
+    }
+
+    #endregion
 }
